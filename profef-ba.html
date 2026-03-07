@@ -31,6 +31,7 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
 .hs{width:28px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);transition:background .3s;cursor:pointer}
 .hs.done{background:var(--teal2)}
 .hs.active{background:var(--gold)}
+.app-ver{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:rgba(255,255,255,.75);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:2px 8px;border-radius:999px;white-space:nowrap}
 
 /* STEP NAV */
 .snav{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,.08);overflow-x:auto}
@@ -296,7 +297,10 @@ body.home-mode .home{display:block}
         <div class="logo-sb">Planejamento em Educacao Fisica</div>
       </div>
     </div>
-    <div class="hsteps" id="hsteps"></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="app-ver" id="appVersion">v0.0.01</span>
+      <div class="hsteps" id="hsteps"></div>
+    </div>
   </div>
 </header>
 
