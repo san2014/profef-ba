@@ -980,9 +980,26 @@ function parseProfefPayload(rawValue){
   var value = (rawValue || "").trim();
   var idx = value.toUpperCase().indexOf("PROFEF:");
   var b64 = idx >= 0 ? value.substring(idx + 7) : value;
-  b64 = b64.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+  // Remove qualquer caractere fora do alfabeto base64/base64url.
+  b64 = b64
+    .replace(/\s+/g, "")
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .replace(/[^A-Za-z0-9+/=]/g, "");
   while (b64.length % 4 !== 0) b64 += "=";
-  var json = decodeURIComponent(escape(atob(b64)));
+  var binary = atob(b64);
+  var json = "";
+  try{
+    if(typeof TextDecoder!=="undefined"){
+      var bytes = new Uint8Array(binary.length);
+      for(var i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+      json = new TextDecoder("utf-8").decode(bytes);
+    }else{
+      json = decodeURIComponent(escape(binary));
+    }
+  }catch(e){
+    json = decodeURIComponent(escape(binary));
+  }
   var data = JSON.parse(json);
   var talp = Array.isArray(data.t) ? data.t : (Array.isArray(data.talp) ? data.talp : []);
   if(!talp.length) throw new Error("payload_sem_talp");
