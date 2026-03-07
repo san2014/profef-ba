@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProfEF-BA</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d2137;--navy2:#1a3a5c;--navy3:#2d5a8e;
+  --teal:#1b7a6e;--teal2:#25a393;
+  --gold:#d4a043;--gold2:#f0c060;
+  --cream:#f8f5ef;--cream2:#ede8df;
+  --white:#fff;--text:#1a1a2e;--text2:#3d4a5c;--text3:#6b7a8d;
+  --border:#d0dae8;--green:#2d7d46;--yellow:#b87d1a;--red:#c0392b;
+  --s1:0 1px 4px rgba(13,33,55,.08);--s2:0 4px 16px rgba(13,33,55,.12);--s3:0 8px 32px rgba(13,33,55,.16);
+  --r:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:var(--s2)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ic{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-tx{font-family:"Source Serif 4",serif;font-size:20px;font-weight:700}
+.logo-sb{font-size:11px;font-weight:300;opacity:.65;letter-spacing:.08em;text-transform:uppercase}
+.hsteps{display:flex;gap:4px}
+.hs{width:28px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);transition:background .3s;cursor:pointer}
+.hs.done{background:var(--teal2)}
+.hs.active{background:var(--gold)}
+
+/* STEP NAV */
+.snav{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,.08);overflow-x:auto}
+.snav-in{max-width:1100px;margin:0 auto;display:flex;padding:0 24px}
+.si{display:flex;align-items:center;gap:10px;padding:12px 20px;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
+.si:hover{color:rgba(255,255,255,.8)}
+.si.active{color:var(--gold2);border-bottom-color:var(--gold)}
+.si.done{color:var(--teal2)}
+.sn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.si.active .sn{background:var(--gold);color:var(--navy)}
+.si.done .sn{background:var(--teal);color:#fff}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:32px 24px 80px}
+.screen{display:none}
+.screen.active{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.ph{margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--gold2);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.ptitle{font-family:"Source Serif 4",serif;font-size:28px;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:6px}
+.pdesc{color:var(--text3);font-size:14px;max-width:640px}
+
+/* FORM */
+.fs{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;box-shadow:var(--s1)}
+.fst{font-family:"Source Serif 4",serif;font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.fr{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:16px}
+.fr:last-child{margin-bottom:0}
+.fi label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:5px}
+.fi input,.fi select,.fi textarea{border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:"IBM Plex Sans",sans-serif;font-size:14px;color:var(--text);background:var(--white);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--navy3);box-shadow:0 0 0 3px rgba(45,90,142,.12)}
+.fi textarea{resize:vertical;min-height:80px}
+
+/* TALP PANEL */
+.qp{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:var(--r);padding:24px;margin-bottom:20px;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.ql{flex:1;min-width:200px}
+.ql h3{font-family:"Source Serif 4",serif;font-size:18px;font-weight:700;margin-bottom:8px}
+.ql p{font-size:13px;opacity:.75;line-height:1.6;margin-bottom:16px}
+.qr{display:flex;flex-direction:column;align-items:center;gap:10px}
+.qbox{width:160px;height:160px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:8px;flex-direction:column;gap:8px}
+.rc{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:6px;padding:12px 14px;margin-top:12px;flex-wrap:wrap}
+.rn{font-family:"IBM Plex Mono",monospace;font-size:28px;font-weight:700;color:var(--gold2);line-height:1}
+
+/* TALP BOX */
+.tb{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:24px;margin-bottom:20px;color:#fff}
+.tb h3{font-family:"Source Serif 4",serif;font-size:18px;font-weight:600;margin-bottom:6px}
+.tb p{font-size:13px;opacity:.75;margin-bottom:16px}
+.twi{display:flex;gap:8px;margin-bottom:12px}
+.twi input{flex:1;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;padding:10px 14px;background:rgba(255,255,255,.1);color:#fff;font-family:"IBM Plex Sans",sans-serif;font-size:14px;outline:none}
+.twi input::placeholder{color:rgba(255,255,255,.4)}
+.twi input:focus{border-color:var(--gold)}
+.tw{display:flex;flex-wrap:wrap;gap:8px;min-height:40px;background:rgba(0,0,0,.2);border-radius:6px;padding:10px}
+.tt{display:flex;align-items:center;gap:6px;background:var(--teal);color:#fff;font-size:13px;font-weight:500;padding:4px 12px;border-radius:20px;cursor:pointer;transition:background .15s}
+.tt:hover{background:#c0392b}
+.tt .ord{font-size:10px;opacity:.7}
+.ta{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.tq{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.tq.central{border-top:3px solid var(--navy)}
+.tq.periph{border-top:3px solid var(--teal)}
+.tq h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.tts{display:inline-flex;align-items:center;gap:4px;background:var(--cream2);font-size:12px;padding:2px 8px;border-radius:12px;margin:2px}
+
+/* RESPOSTAS */
+.rl{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto}
+.ri{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-size:13px}
+.ri-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ri-n{font-weight:700;font-size:12px;color:var(--navy);font-family:"IBM Plex Mono",monospace}
+.ri-x{background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 5px;font-size:14px;transition:color .15s}
+.ri-x:hover{color:var(--red)}
+.ri-w{display:flex;flex-wrap:wrap;gap:4px}
+.ri-wt{background:var(--cream2);border-radius:10px;padding:2px 8px;font-size:11px;color:var(--text2)}
+
+/* UNITS */
+.ug{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px}
+@media(max-width:768px){.ug{grid-template-columns:1fr}}
+.uc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)}
+.uh{padding:14px 18px;display:flex;align-items:center;gap:10px}
+.uh.c1{background:linear-gradient(135deg,#1a3a5c,#2d5a8e);color:#fff}
+.uh.c2{background:linear-gradient(135deg,#1b7a6e,#25a393);color:#fff}
+.uh.c3{background:linear-gradient(135deg,#8b5a1a,#d4a043);color:#fff}
+.ui{font-size:22px}
+.ut{font-family:"Source Serif 4",serif;font-size:17px;font-weight:700}
+.us{font-size:11px;opacity:.75}
+.ub{padding:16px}
+.pi{display:flex;gap:8px;margin-bottom:10px}
+.pi input{flex:1;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-family:"IBM Plex Sans",sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.pi input:focus{border-color:var(--navy3)}
+.pl{min-height:60px}
+.pitem{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border-radius:5px;padding:7px 10px;margin-bottom:6px;font-size:13px;border:1px solid var(--cream2)}
+.etag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:.04em;text-transform:uppercase;margin-left:6px;flex-shrink:0}
+.rbtn{background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 5px;font-size:13px;transition:color .15s}
+.rbtn:hover{color:var(--red)}
+.um{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.um textarea{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:7px 10px;font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:var(--text);background:#fff;outline:none;min-height:60px;resize:vertical;margin-bottom:8px;transition:border-color .2s}
+.um textarea:focus{border-color:var(--navy3)}
+.es{text-align:center;padding:24px;color:var(--text3);font-size:13px}
+
+/* MATRIX */
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.ec{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)}
+.eh{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.eh.e0{background:linear-gradient(135deg,#2d5a8e,#1a3a5c)}
+.eh.e1{background:linear-gradient(135deg,#1b7a6e,#0d4a43)}
+.eh.e2{background:linear-gradient(135deg,#8b5a1a,#5a3a0d)}
+.eh.e3{background:linear-gradient(135deg,#5a2d7a,#3a1a5a)}
+.eh.e4{background:linear-gradient(135deg,#1a6b8b,#0d3f5a)}
+.eh.e5{background:linear-gradient(135deg,#7a1a1a,#4a0d0d)}
+.en{font-size:13px;font-weight:600;color:#fff;line-height:1.2}
+.ebody{padding:14px 16px}
+.ebar{height:10px;background:var(--cream2);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.ebarfill{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.16,1,.3,1)}
+.b0{background:#2d5a8e}.b1{background:#1b7a6e}.b2{background:#8b5a1a}.b3{background:#5a2d7a}.b4{background:#1a6b8b}.b5{background:#7a1a1a}
+.t0{background:#e8f0f8;color:#2d5a8e;border:1px solid #c2d6ec}
+.t1{background:#e8f5f3;color:#1b7a6e;border:1px solid #a8d5cf}
+.t2{background:#f8f0e8;color:#8b5a1a;border:1px solid #ddc4a0}
+.t3{background:#f3e8f8;color:#5a2d7a;border:1px solid #c4a8d5}
+.t4{background:#e8f3f8;color:#1a6b8b;border:1px solid #a0c8dd}
+.t5{background:#f8e8e8;color:#7a1a1a;border:1px solid #dda8a8}
+.estats{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
+.ept{display:inline-block;font-size:11px;background:var(--cream);border:1px solid var(--cream2);border-radius:10px;padding:1px 8px;margin:2px;color:var(--text2)}
+
+/* INDICATOR */
+.ind-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;box-shadow:var(--s1)}
+.ibadge{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:var(--r);margin-bottom:16px;font-size:15px;font-weight:600}
+.ibadge.green{background:#eaf5ee;color:var(--green);border:1px solid #a8d5b5}
+.ibadge.yellow{background:#fef8e7;color:var(--yellow);border:1px solid #e8c97a}
+.ibadge.red{background:#fdecea;color:var(--red);border:1px solid #e8b0a8}
+.ibig{font-size:28px}
+.ibt{font-size:16px;font-weight:700}
+.ibs{font-size:12px;font-weight:400;opacity:.8;margin-top:2px}
+.cklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.cki{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;border:1px solid var(--border);font-size:13px;font-weight:500}
+.cki.ok{background:#eaf5ee;border-color:#a8d5b5;color:var(--green)}
+.cki.nok{background:#fdecea;border-color:#e8b0a8;color:var(--red)}
+.dw{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.dl{flex:1;min-width:200px}
+.dli{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+.dld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dlp{margin-left:auto;font-weight:600;font-family:"IBM Plex Mono",monospace;font-size:12px}
+
+/* REPORT */
+.rh{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:32px;border-radius:var(--r);margin-bottom:24px}
+.rh h2{font-family:"Source Serif 4",serif;font-size:24px;font-weight:700;margin-bottom:4px}
+.rh p{font-size:13px;opacity:.7}
+.rm{display:flex;flex-wrap:wrap;gap:24px;margin-top:16px}
+.rmi .lbl{font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.08em}
+.rmi .val{font-size:14px;font-weight:500}
+.rsec{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;box-shadow:var(--s1)}
+.rsec h3{font-family:"Source Serif 4",serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.ru{margin-bottom:16px;padding:14px;border-radius:6px;border:1px solid var(--border)}
+.ru.u1{border-left:4px solid var(--navy3)}
+.ru.u2{border-left:4px solid var(--teal)}
+.ru.u3{border-left:4px solid var(--gold)}
+.ru h4{font-weight:600;font-size:14px;margin-bottom:6px;color:var(--navy)}
+.pb{height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;margin-top:12px}
+.pbf{height:100%;background:var(--gold);border-radius:2px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:6px;font-family:"IBM Plex Sans",sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-p{background:var(--navy);color:#fff}
+.btn-p:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:var(--s2)}
+.btn-s{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
+.btn-s:hover{border-color:var(--navy3);background:var(--cream)}
+.btn-g{background:var(--teal);color:#fff}
+.btn-g:hover{background:var(--teal2)}
+.bsm{padding:6px 14px;font-size:12px;border-radius:5px}
+.bic{padding:8px;border-radius:5px;background:none;border:1.5px solid var(--border);color:var(--text2);cursor:pointer;font-size:14px;transition:all .15s}
+.bic:hover{background:var(--cream);color:var(--navy)}
+.acts{display:flex;justify-content:space-between;align-items:center;padding-top:24px;margin-top:8px;border-top:1px solid var(--border);gap:12px}
+.actsr{display:flex;gap:10px;align-items:center}
+.info{display:flex;gap:12px;background:#eef4fb;border:1px solid #c2d6ec;border-radius:6px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy2)}
+.pnote{text-align:center;padding:16px;font-size:12px;color:var(--text3);border:1px dashed var(--border);border-radius:6px;margin-top:20px}
+
+/* SCANNER */
+.sco{display:none;position:fixed;inset:0;background:#000;z-index:300;flex-direction:column;align-items:center;justify-content:center}
+.sco.open{display:flex}
+.scvp{position:relative;width:min(90vw,380px);aspect-ratio:1;border-radius:16px;overflow:hidden;box-shadow:0 0 0 9999px rgba(0,0,0,.85)}
+.scvp video{width:100%;height:100%;object-fit:cover;display:block}
+.sccorners{position:absolute;inset:0;pointer-events:none}
+.sccorners::before,.sccorners::after{content:"";position:absolute;width:36px;height:36px;border-color:#25a393;border-style:solid}
+.sccorners::before{top:12px;left:12px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.sccorners::after{bottom:12px;right:12px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.scline{position:absolute;left:16px;right:16px;height:2px;background:linear-gradient(to right,transparent,#25a393,transparent);animation:scl 2s ease-in-out infinite;box-shadow:0 0 8px #25a393}
+@keyframes scl{0%{top:16px}50%{top:calc(100% - 18px)}100%{top:16px}}
+.sclabel{color:#fff;font-size:14px;margin-top:24px;opacity:.85;text-align:center;line-height:1.5;max-width:300px}
+.scclose{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);border:none;border-radius:50%;width:40px;height:40px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.scfb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(27,122,110,.85);color:#fff;font-size:48px;border-radius:16px;opacity:0;transition:opacity .2s;pointer-events:none}
+.scfb.show{opacity:1}
+
+/* PRINT SCREEN */
+.pso{display:none;position:fixed;inset:0;background:#fff;z-index:500;overflow-y:auto}
+.pso.open{display:block}
+.pstb{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pstb h2{font-size:16px;font-weight:700}
+.psb{max-width:600px;margin:0 auto;padding:32px 24px}
+.poster{border:2px solid #0d2137;border-radius:12px;padding:32px;text-align:center;background:#fff}
+.plogo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+.plogo-ic{width:40px;height:40px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.plogo-tx{font-family:"Source Serif 4",serif;font-size:22px;font-weight:700;color:var(--navy)}
+.ptit{font-family:"Source Serif 4",serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.psub{font-size:13px;color:var(--text3);margin-bottom:24px;line-height:1.5}
+.pqr{width:220px;height:220px;margin:0 auto 20px;background:#fff;border:2px solid #0d2137;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center}
+.psteps{text-align:left;background:#f8f5ef;border-radius:8px;padding:16px 20px;margin-top:20px}
+.psteps h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);margin-bottom:10px}
+.pstep{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:13px;color:var(--text2)}
+.pstep-n{width:20px;height:20px;background:var(--navy);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.pfoot{margin-top:20px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);padding-top:12px}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(13,33,55,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.mo.open{display:flex}
+.modal{background:#fff;border-radius:var(--r);padding:28px;max-width:480px;width:100%;box-shadow:var(--s3)}
+.modal h3{font-family:"Source Serif 4",serif;font-size:20px;color:var(--navy);margin-bottom:10px}
+.modal p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.modal textarea{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;min-height:90px;resize:vertical;outline:none;margin-bottom:14px}
+.modal textarea:focus{border-color:var(--teal)}
+.macts{display:flex;gap:10px;justify-content:flex-end}
+
+@media print{
+  .hdr,.snav,.acts,.pnote,.pstb{display:none!important}
+  .pso{display:block!important}
+  .main{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo">
+      <div class="logo-ic">&#127939;</div>
+      <div>
+        <div class="logo-tx">ProfEF-BA</div>
+        <div class="logo-sb">Planejamento em Educacao Fisica</div>
+      </div>
+    </div>
+    <div class="hsteps" id="hsteps"></div>
+  </div>
+</header>
+
+<nav class="snav">
+  <div class="snav-in" id="snav">
+    <div class="si active" onclick="goTo(1)" data-step="1"><div class="sn">1</div><span>Contextualizacao</span></div>
+    <div class="si" onclick="goTo(2)" data-step="2"><div class="sn">2</div><span>Diagnostico TALP</span></div>
+    <div class="si" onclick="goTo(3)" data-step="3"><div class="sn">3</div><span>Unidades Didaticas</span></div>
+    <div class="si" onclick="goTo(4)" data-step="4"><div class="sn">4</div><span>Matriz Curricular</span></div>
+    <div class="si" onclick="goTo(5)" data-step="5"><div class="sn">5</div><span>Relatorio Final</span></div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ETAPA 1 -->
+<div class="screen active" id="screen-1">
+  <div class="ph">
+    <div class="badge">Etapa 1 de 5</div>
+    <h1 class="ptitle">Contextualizacao Escolar</h1>
+    <p class="pdesc">Situe o planejamento na realidade concreta da sua escola e turma.</p>
+  </div>
+  <div class="fs">
+    <div class="fst">&#127979; Dados da Escola</div>
+    <div class="fr">
+      <div class="fi" style="grid-column:1/-1"><label>Nome da Escola</label><input type="text" id="escola" placeholder="Ex.: Escola Estadual Joao Pessoa"></div>
+    </div>
+    <div class="fr">
+      <div class="fi"><label>Municipio</label><input type="text" id="municipio" placeholder="Ex.: Jequie"></div>
+      <div class="fi"><label>Territorio de Identidade</label>
+        <select id="territorio">
+          <option value="">Selecione...</option>
+          <option>Bacia do Paramirim</option><option>Bacia do Rio Corrente</option><option>Bacia do Rio Grande</option>
+          <option>Costa do Descobrimento</option><option>Extremo Sul</option><option>Irece</option>
+          <option>Itaparica</option><option>Litoral Norte e Agreste Baiano</option><option>Litoral Sul</option>
+          <option>Medio Rio das Contas</option><option>Medio Sudoeste da Bahia</option><option>Metropolitano de Salvador</option>
+          <option>Nordeste</option><option>Piemonte da Diamantina</option><option>Piemonte do Paraguacu</option>
+          <option>Portal do Sertao</option><option>Reconcavo</option><option>Semiarido Nordeste II</option>
+          <option>Serra Geral</option><option>Sisal</option><option>Sudoeste Baiano</option>
+          <option>Velho Chico</option><option>Vitoria da Conquista</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="fs">
+    <div class="fst">&#128218; Dados da Turma</div>
+    <div class="fr">
+      <div class="fi"><label>Serie / Ano</label><select id="serie"><option value="">Selecione...</option><option>1 Ano do Ensino Medio</option><option>2 Ano do Ensino Medio</option><option>3 Ano do Ensino Medio</option></select></div>
+      <div class="fi"><label>Turma</label><input type="text" id="turma" placeholder="Ex.: A, B, 01..."></div>
+      <div class="fi"><label>Nr de Estudantes</label><input type="number" id="numEst" placeholder="Ex.: 35" min="1" max="60"></div>
+      <div class="fi"><label>Aulas semanais EF</label><select id="aulas"><option value="">Selecione...</option><option>1 aula semanal</option><option>2 aulas semanais</option><option>3 aulas semanais</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fi"><label>Professor(a)</label><input type="text" id="professor" placeholder="Seu nome"></div>
+      <div class="fi"><label>Ano Letivo</label><input type="text" id="anoLetivo" value="2026"></div>
+    </div>
+  </div>
+  <div class="fs">
+    <div class="fst">&#127959; Condicoes Materiais</div>
+    <div class="fr">
+      <div class="fi"><label>Espacos fisicos</label><textarea id="espacos" placeholder="Ex.: Quadra coberta, patio externo..."></textarea></div>
+      <div class="fi"><label>Materiais e equipamentos</label><textarea id="materiais" placeholder="Ex.: Bolas, colchonetes, redes..."></textarea></div>
+    </div>
+    <div class="fr">
+      <div class="fi" style="grid-column:1/-1"><label>Contexto comunitario</label><textarea id="contexto" placeholder="Ex.: Ha quadra no bairro, parque municipal proximo..."></textarea></div>
+    </div>
+  </div>
+  <div class="acts"><div></div><div class="actsr"><button class="btn btn-p" onclick="nextStep(1)">Proxima Etapa: Diagnostico &rarr;</button></div></div>
+</div>
+
+<!-- ETAPA 2 -->
+<div class="screen" id="screen-2">
+  <div class="ph">
+    <div class="badge">Etapa 2 de 5</div>
+    <h1 class="ptitle">Diagnostico das Representacoes Sociais</h1>
+    <p class="pdesc">Gere o cartaz com QR Code para os alunos responderem o TALP nos proprios celulares.</p>
+  </div>
+
+  <div class="qp">
+    <div class="ql">
+      <h3>&#128241; Coleta TALP com QR Code</h3>
+      <p>Depois que os alunos preencherem o formulario no celular, clique em <strong>Escanear QR</strong> para ler, um a um, os QRs gerados na tela deles. Cada leitura adiciona automaticamente a resposta na lista abaixo.</p>
+      <div class="rc">
+        <div>
+          <div class="rn" id="respostasCount">0</div>
+          <div style="font-size:11px;opacity:.65;margin-top:2px;">respostas</div>
+        </div>
+        <div style="flex:1;padding-left:12px;font-size:12px;opacity:.75;line-height:1.6;">
+          <strong>Fluxo do professor:</strong> aluno responde no celular &rarr; aluno abre o QR final &rarr; voce clica em <strong>Escanear QR</strong> e captura cada resposta
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button class="btn btn-p bsm" onclick="openScanner()">&#128247; Escanear QR</button>
+          <button class="btn bsm" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;" onclick="openImport()">&#128203; Colar codigo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fs" id="respostasSection" style="display:none;">
+    <div class="fst">&#128203; Respostas Coletadas</div>
+    <div class="rl" id="respostasList"></div>
+  </div>
+
+  <div id="talpAnalysis" style="display:none;">
+    <div class="fs">
+      <div class="fst">&#128269; Analise das Representacoes Sociais</div>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px;"><span id="talpCount">0</span> evocacoes de <span id="talpStudents">0</span> estudantes:</p>
+      <div class="ta">
+        <div class="tq central"><h4>Nucleo Central (mais evocadas)</h4><div id="nucleoCentral"></div></div>
+        <div class="tq periph"><h4>Elementos Perifericos</h4><div id="elementosPerifericos"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fs">
+    <div class="fst">&#128202; Sintese do Mapeamento</div>
+    <div class="fr">
+      <div class="fi"><label>Praticas JA vivenciadas</label><textarea id="praticasVividas" placeholder="Preenchido automaticamente ao importar respostas..."></textarea></div>
+      <div class="fi"><label>Praticas DESEJADAS</label><textarea id="praticasDesejadas" placeholder="Sintese das preferencias dos estudantes..."></textarea></div>
+    </div>
+    <div class="fr">
+      <div class="fi"><label>Praticas invisibilizadas</label><textarea id="praticasInv" placeholder="Ex.: jogos indigenas, capoeira angola..."></textarea></div>
+      <div class="fi"><label>Barreiras identificadas</label><textarea id="barreiras" placeholder="Ex.: falta de espaco, questoes de genero..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="tb">
+    <h3>Adicionar Palavras Manualmente</h3>
+    <p>Coleta em papel? Insira as evocacoes diretamente:</p>
+    <div class="twi">
+      <input type="text" id="talpInput" placeholder="Digite uma palavra e pressione Enter..." onkeydown="if(event.key==='Enter')addTalpBtn()">
+      <button class="btn btn-g bsm" onclick="addTalpBtn()">+ Adicionar</button>
+    </div>
+    <div class="tw" id="talpWords"><span style="color:rgba(255,255,255,.3);font-size:13px;padding:4px;">As palavras aparecerao aqui...</span></div>
+    <div style="margin-top:10px;font-size:11px;opacity:.6;">Clique em uma palavra para remover</div>
+  </div>
+
+  <div class="acts">
+    <button class="btn btn-s" onclick="goTo(1)">&larr; Voltar</button>
+    <div class="actsr"><button class="btn btn-p" onclick="nextStep(2)">Proxima Etapa: Unidades Didaticas &rarr;</button></div>
+  </div>
+</div>
+
+<!-- ETAPA 3 -->
+<div class="screen" id="screen-3">
+  <div class="ph">
+    <div class="badge">Etapa 3 de 5</div>
+    <h1 class="ptitle">Organizacao das Unidades Didaticas</h1>
+    <p class="pdesc">Estruture o planejamento em tres unidades progressivas, alinhadas ao DCRB (2022).</p>
+  </div>
+  <div class="info"><span style="font-size:16px;">&#128161;</span><div>Digite praticas corporais e pressione Enter. O sistema classifica automaticamente nos eixos do DCRB.</div></div>
+  <div class="ug">
+    <div class="uc">
+      <div class="uh c1"><div class="ui">&#127807;</div><div><div class="ut">Consolidar</div><div class="us">Unidade I &middot; Praticas familiares</div></div></div>
+      <div class="ub">
+        <div class="pi"><input type="text" id="u1inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(1)"><button class="bic" onclick="addP(1)">+</button></div>
+        <div class="pl" id="u1list"><div class="es">Nenhuma pratica adicionada</div></div>
+        <div class="um">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
+          <textarea id="u1comp" placeholder="Ex.: EF35LL03..."></textarea>
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+          <textarea id="u1aval" placeholder="Ex.: Portfolio, roda de conversa..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uh c2"><div class="ui">&#128300;</div><div><div class="ut">Aprofundar</div><div class="us">Unidade II &middot; Analise critica</div></div></div>
+      <div class="ub">
+        <div class="pi"><input type="text" id="u2inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(2)"><button class="bic" onclick="addP(2)">+</button></div>
+        <div class="pl" id="u2list"><div class="es">Nenhuma pratica adicionada</div></div>
+        <div class="um">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
+          <textarea id="u2comp" placeholder="Ex.: Analise historica..."></textarea>
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+          <textarea id="u2aval" placeholder="Ex.: Seminario, projeto..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uh c3"><div class="ui">&#127757;</div><div><div class="ut">Ampliar</div><div class="us">Unidade III &middot; Justica curricular</div></div></div>
+      <div class="ub">
+        <div class="pi"><input type="text" id="u3inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(3)"><button class="bic" onclick="addP(3)">+</button></div>
+        <div class="pl" id="u3list"><div class="es">Nenhuma pratica adicionada</div></div>
+        <div class="um">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
+          <textarea id="u3comp" placeholder="Ex.: Vivencias interculturais..."></textarea>
+          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+          <textarea id="u3aval" placeholder="Ex.: Festival cultural..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="acts">
+    <button class="btn btn-s" onclick="goTo(2)">&larr; Voltar</button>
+    <div class="actsr"><button class="btn btn-p" onclick="nextStep(3)">Proxima Etapa: Matriz Curricular &rarr;</button></div>
+  </div>
+</div>
+
+<!-- ETAPA 4 -->
+<div class="screen" id="screen-4">
+  <div class="ph">
+    <div class="badge">Etapa 4 de 5</div>
+    <h1 class="ptitle">Matriz de Justica Curricular</h1>
+    <p class="pdesc">Analise automatica da distribuicao das praticas nos eixos do DCRB (2022).</p>
+  </div>
+  <div class="ind-panel">
+    <h3 style="font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:14px;">&#128202; Indicador de Equilibrio Curricular</h3>
+    <div id="indBadge" class="ibadge yellow"><div class="ibig">&#128993;</div><div><div class="ibt">Adicione praticas para calcular</div><div class="ibs">Volte a Etapa 3 e adicione praticas nas unidades</div></div></div>
+    <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;">Checklist de Diversidade Curricular</h4>
+    <div class="cklist" id="checklist"></div>
+  </div>
+  <div class="mg" id="matrixGrid"></div>
+  <div class="fs" id="donutSec" style="display:none;">
+    <div class="fst">&#128200; Distribuicao por Eixo Curricular</div>
+    <div class="dw">
+      <svg id="donutSvg" width="180" height="180" viewBox="0 0 180 180"></svg>
+      <div class="dl" id="donutLeg"></div>
+    </div>
+  </div>
+  <div class="acts">
+    <button class="btn btn-s" onclick="goTo(3)">&larr; Voltar</button>
+    <div class="actsr"><button class="btn btn-p" onclick="nextStep(4)">Gerar Relatorio Final &rarr;</button></div>
+  </div>
+</div>
+
+<!-- ETAPA 5 -->
+<div class="screen" id="screen-5">
+  <div class="ph">
+    <div class="badge">Etapa 5 de 5</div>
+    <h1 class="ptitle">Relatorio Final do Planejamento</h1>
+    <p class="pdesc">Resumo completo do plano de curso anual gerado pelo ProfEF-BA.</p>
+  </div>
+  <div class="rh">
+    <h2 id="rTitle">Plano de Curso Anual &middot; Educacao Fisica</h2>
+    <p>Fundamentado no DCRB (2022), nas Representacoes Sociais e na Justica Curricular</p>
+    <div class="rm" id="rMeta"></div>
+    <div class="pb"><div class="pbf" style="width:100%"></div></div>
+  </div>
+  <div class="rsec" id="rCtx"></div>
+  <div class="rsec" id="rDiag"></div>
+  <div class="rsec" id="rUnit"></div>
+  <div class="rsec" id="rMat"></div>
+  <div class="rsec" id="rInd"></div>
+  <div class="pnote">Para salvar como PDF: use <strong>Ctrl+P</strong> e selecione <em>"Salvar como PDF"</em>.</div>
+  <div class="acts">
+    <button class="btn btn-s" onclick="goTo(4)">&larr; Voltar</button>
+    <div class="actsr">
+      <button class="btn btn-g" onclick="window.print()">&#128424; Exportar PDF</button>
+      <button class="btn btn-p" onclick="resetAll(); location.reload()">&#8635; Novo Planejamento</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- SCANNER -->
+<div class="sco" id="scanOverlay">
+  <button class="scclose" onclick="closeScanner()">&#215;</button>
+  <div class="scvp">
+    <video id="scanVideo" playsinline autoplay muted></video>
+    <div class="sccorners"></div>
+    <div class="scline"></div>
+    <div class="scfb" id="scanFb">&#10003;</div>
+  </div>
+  <div class="sclabel">Aponte para o QR Code<br>gerado na tela do estudante</div>
+</div>
+
+<!-- MODAL IMPORTAR -->
+<div class="mo" id="importModal">
+  <div class="modal">
+    <h3>&#128229; Importar Resposta</h3>
+    <p>Cole abaixo o codigo gerado pelo formulario do estudante:</p>
+    <textarea id="importCode" placeholder="Cole o codigo aqui..."></textarea>
+    <div id="importErr" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none;">Codigo invalido. Verifique se foi copiado corretamente.</div>
+    <div class="macts">
+      <button class="btn btn-s" onclick="closeImport()">Cancelar</button>
+      <button class="btn btn-p" onclick="doImport()">&#10003; Importar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+var state = {
+  step: 1,
+  done: new Set(),
+  talp: [],
+  respostas: [],
+  prac: {1:[], 2:[], 3:[]}
+};
+
+/* ===================== PERSISTÊNCIA (localStorage) ===================== */
+var LS_KEY = "profefba_v2_plan";
+
+function collectFields(){
+  var ids = [
+    "escola","municipio","territorio","serie","turma","numEst","aulas","professor","anoLetivo",
+    "espacos","materiais","contexto",
+    "praticasVividas","praticasDesejadas","praticasInv","barreiras",
+    "u1comp","u1aval","u2comp","u2aval","u3comp","u3aval"
+  ];
+  var out = {};
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) out[id] = el.value || "";
+  });
+  return out;
+}
+function applyFields(fields){
+  if(!fields) return;
+  Object.keys(fields).forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = fields[id];
+  });
+}
+function saveAll(){
+  try{
+    var payload = {
+      state: {
+        step: state.step,
+        talp: state.talp,
+        respostas: state.respostas,
+        prac: state.prac,
+        done: Array.from(state.done || [])
+      },
+      fields: collectFields()
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(payload));
+  }catch(e){}
+}
+function loadAll(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function resetAll(){
+  localStorage.removeItem(LS_KEY);
+}
+
+/* autosave simples (evita perder dados no protótipo) */
+window.addEventListener("beforeunload", saveAll);
+setInterval(saveAll, 1500);
+document.addEventListener("input", function(e){
+  // salva rápido quando o usuário digita
+  if(e && e.target && (e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA" || e.target.tagName==="SELECT")) saveAll();
+});
+
+// ===================== DATA URL (formulario do aluno embutido) =====================
+var ALUNO_URL = "data:text/html;base64,PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD1VVEYtOD48bWV0YSBuYW1lPXZpZXdwb3J0IGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCxpbml0aWFsLXNjYWxlPTEsdXNlci1zY2FsYWJsZT1ubyI+PHRpdGxlPlByb2ZFRi1CQTwvdGl0bGU+PHN0eWxlPip7Ym94LXNpemluZzpib3JkZXItYm94O21hcmdpbjowO3BhZGRpbmc6MH1ib2R5e2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7YmFja2dyb3VuZDojZjVmMmViO3BhZGRpbmc6MTJweCAxNHB4IDUwcHg7Y29sb3I6IzExMX0uaGRye2JhY2tncm91bmQ6IzBkMjEzNztjb2xvcjojZmZmO2JvcmRlci1yYWRpdXM6OHB4O3BhZGRpbmc6MTJweCAxNHB4O21hcmdpbi1ib3R0b206MTRweDtmb250LXdlaWdodDo3MDA7Zm9udC1zaXplOjE1cHh9LmluZHtiYWNrZ3JvdW5kOiMwZDIxMzc7Y29sb3I6I2Q0YTA0Mztib3JkZXItcmFkaXVzOjZweDtwYWRkaW5nOjEycHg7dGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zdHlsZTppdGFsaWM7Zm9udC13ZWlnaHQ6NzAwO2ZvbnQtc2l6ZToxNXB4O21hcmdpbi1ib3R0b206MTJweH0uc2Vje2JhY2tncm91bmQ6I2ZmZjtib3JkZXI6MXB4IHNvbGlkICNjZGQ1ZTA7Ym9yZGVyLXJhZGl1czo4cHg7cGFkZGluZzoxNHB4O21hcmdpbi1ib3R0b206MTJweH1oMntmb250LXNpemU6MTNweDtmb250LXdlaWdodDo3MDA7Y29sb3I6IzBkMjEzNzttYXJnaW4tYm90dG9tOjEwcHh9LnJvd3tkaXNwbGF5OmZsZXg7Z2FwOjZweDttYXJnaW4tYm90dG9tOjhweH0ucm93IGlucHV0e2ZsZXg6MTttYXJnaW46MH1pbnB1dCx0ZXh0YXJlYXt3aWR0aDoxMDAlO2JvcmRlcjoxLjVweCBzb2xpZCAjY2RkNWUwO2JvcmRlci1yYWRpdXM6NnB4O3BhZGRpbmc6OHB4IDEwcHg7Zm9udDoxNHB4IHNhbnMtc2VyaWY7b3V0bGluZTpub25lO21hcmdpbi1ib3R0b206MTBweH1pbnB1dDpmb2N1cyx0ZXh0YXJlYTpmb2N1c3tib3JkZXItY29sb3I6IzFiN2E2ZX10ZXh0YXJlYXttaW4taGVpZ2h0OjYwcHh9LmFkZHtiYWNrZ3JvdW5kOiMxYjdhNmU7Y29sb3I6I2ZmZjtib3JkZXI6bm9uZTtib3JkZXItcmFkaXVzOjZweDtwYWRkaW5nOjAgMTRweDtmb250LXNpemU6MjBweDtjdXJzb3I6cG9pbnRlcn0uY2hpcHN7ZGlzcGxheTpmbGV4O2ZsZXgtd3JhcDp3cmFwO2dhcDo1cHg7bWluLWhlaWdodDozNnB4O2JhY2tncm91bmQ6I2Y1ZjJlYjtib3JkZXI6MS41cHggZGFzaGVkICNjZGQ1ZTA7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzo3cHg7bWFyZ2luLWJvdHRvbTo2cHh9LmNoaXB7YmFja2dyb3VuZDojMGQyMTM3O2NvbG9yOiNmZmY7Zm9udC1zaXplOjExcHg7cGFkZGluZzozcHggOXB4O2JvcmRlci1yYWRpdXM6MTJweDtjdXJzb3I6cG9pbnRlcn0uaGludHtmb250LXNpemU6MTBweDtjb2xvcjojODg4O21hcmdpbi1ib3R0b206MTBweH0uc3Vie3dpZHRoOjEwMCU7YmFja2dyb3VuZDojMWI3YTZlO2NvbG9yOiNmZmY7Ym9yZGVyOm5vbmU7Ym9yZGVyLXJhZGl1czo4cHg7cGFkZGluZzoxM3B4O2ZvbnQtc2l6ZToxNXB4O2ZvbnQtd2VpZ2h0OjcwMDtjdXJzb3I6cG9pbnRlcn0jb2t7ZGlzcGxheTpub25lO3RleHQtYWxpZ246Y2VudGVyO3BhZGRpbmc6MjBweCAxMHB4fSNvayBoMntmb250LXNpemU6MjBweDtmb250LXdlaWdodDo3MDA7Y29sb3I6IzBkMjEzNzttYXJnaW46MTBweCAwIDZweH0jb2sgcHtmb250LXNpemU6MTJweDtjb2xvcjojNjY2O21hcmdpbi1ib3R0b206MTRweH0jcWR7d2lkdGg6MTk2cHg7aGVpZ2h0OjE5NnB4O21hcmdpbjowIGF1dG8gMTJweDtiYWNrZ3JvdW5kOiNmZmY7Ym9yZGVyLXJhZGl1czo4cHg7cGFkZGluZzo2cHg7Ym94LXNoYWRvdzowIDNweCAxNHB4IHJnYmEoMCwwLDAsLjE1KTtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXJ9LmJre2JhY2tncm91bmQ6bm9uZTtib3JkZXI6MXB4IHNvbGlkICNjZGQ1ZTA7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzo4cHggMTZweDtmb250LXNpemU6MTJweDtjdXJzb3I6cG9pbnRlcjtjb2xvcjojNTU1O21hcmdpbi10b3A6OHB4fTwvc3R5bGU+PC9oZWFkPjxib2R5PjxkaXYgY2xhc3M9aGRyPlByb2ZFRi1CQSAmbWRhc2g7IERpYWdub3N0aWNvIFRBTFA8L2Rpdj48ZGl2IGlkPWZybT48ZGl2IGNsYXNzPXNlYz48ZGl2IGNsYXNzPWluZD5FZHVjYWNhbyBGaXNpY2Egbm8gRW5zaW5vIE1lZGlvPC9kaXY+PGgyPlBhbGF2cmFzIHF1ZSB2ZW0gYSBtZW50ZTo8L2gyPjxkaXYgY2xhc3M9cm93PjxpbnB1dCBpZD13aSBwbGFjZWhvbGRlcj0iRGlnaXRlIGUgcHJlc3Npb25lICsiIG1heGxlbmd0aD0yNSBvbmtleWRvd249ImlmKGV2ZW50LmtleT09PSdFbnRlcicpe2V2ZW50LnByZXZlbnREZWZhdWx0KCk7QSgpfSI+PGJ1dHRvbiBjbGFzcz1hZGQgb25jbGljaz1BKCk+KzwvYnV0dG9uPjwvZGl2PjxkaXYgY2xhc3M9Y2hpcHMgaWQ9Y2g+PHNwYW4gc3R5bGU9ImNvbG9yOiNhYWE7Zm9udC1zaXplOjExcHgiPlBhbGF2cmFzIGFxdWkuLi48L3NwYW4+PC9kaXY+PHAgY2xhc3M9aGludD5Ub3F1ZSBwYXJhIHJlbW92ZXIgLSBtYXguIDggcGFsYXZyYXM8L3A+PC9kaXY+PGRpdiBjbGFzcz1zZWM+PGgyPlNvYnJlIHZvY2U8L2gyPjxsYWJlbCBzdHlsZT0iZm9udC1zaXplOjExcHg7Zm9udC13ZWlnaHQ6NjAwO2Rpc3BsYXk6YmxvY2s7bWFyZ2luLWJvdHRvbTo0cHgiPkdvc3RhcmlhIGRlIGFwcmVuZGVyOjwvbGFiZWw+PGlucHV0IGlkPWRlcyBwbGFjZWhvbGRlcj0iRXguOiBkYW5jYSwgc2thdGUuLi4iIG1heGxlbmd0aD00MD48bGFiZWwgc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjYwMDtkaXNwbGF5OmJsb2NrO21hcmdpbi1ib3R0b206NHB4Ij5SYXJhbWVudGUgbmFzIGF1bGFzOjwvbGFiZWw+PGlucHV0IGlkPWludiBwbGFjZWhvbGRlcj0iRXguOiBqb2dvcyBpbmRpZ2VuYXMuLi4iIG1heGxlbmd0aD00MD48bGFiZWwgc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjYwMDtkaXNwbGF5OmJsb2NrO21hcmdpbi1ib3R0b206NHB4Ij5PIHF1ZSB0ZSBpbXBlZGU6PC9sYWJlbD48dGV4dGFyZWEgaWQ9YmFyIHBsYWNlaG9sZGVyPSJFc3BhY28sIHNhdWRlLi4uIiBtYXhsZW5ndGg9ODA+PC90ZXh0YXJlYT48L2Rpdj48YnV0dG9uIGNsYXNzPXN1YiBvbmNsaWNrPUcoKT5FbnZpYXI8L2J1dHRvbj48L2Rpdj48ZGl2IGlkPW9rPjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTo1NnB4Ij4mIzEwMDA0OzwvZGl2PjxoMj5Qcm9udG8hPC9oMj48cD5Nb3N0cmUgYW8gcHJvZmVzc29yIGVzY2FuZWFyPGJyPkJyaWxobyBtYXhpbW8gZmFjaWxpdGE8L3A+PGRpdiBpZD1xZD48L2Rpdj48YnV0dG9uIGNsYXNzPWJrIG9uY2xpY2s9ImRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdmcm0nKS5zdHlsZS5kaXNwbGF5PSdibG9jayc7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ29rJykuc3R5bGUuZGlzcGxheT0nbm9uZSciPkVkaXRhcjwvYnV0dG9uPjwvZGl2PjxzY3JpcHQ+dmFyIFc9W107ZnVuY3Rpb24gQSgpe3ZhciBpPWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd3aScpLHc9aS52YWx1ZS50cmltKCk7aWYoIXd8fFcubGVuZ3RoPj04KXJldHVybjtXLnB1c2godyk7aS52YWx1ZT0nJztSKCk7fWZ1bmN0aW9uIFIoKXt2YXIgYz1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2gnKTtpZighVy5sZW5ndGgpe2MuaW5uZXJIVE1MPSc8c3BhbiBzdHlsZT0iY29sb3I6I2FhYTtmb250LXNpemU6MTFweCI+UGFsYXZyYXMgYXF1aS4uLjwvc3Bhbj4nO3JldHVybjt9Yy5pbm5lckhUTUw9Vy5tYXAoZnVuY3Rpb24odyxpKXtyZXR1cm4nPHNwYW4gY2xhc3M9Y2hpcCBvbmNsaWNrPSJXLnNwbGljZSgnK2krJywxKTtSKCkiPicrKCBpKzEpKycuJyt3KycgeDwvc3Bhbj4nO30pLmpvaW4oJycpO31mdW5jdGlvbiBHKCl7aWYoIVcubGVuZ3RoKXthbGVydCgnQWRpY2lvbmUgYW8gbWVub3MgdW1hIHBhbGF2cmEuJyk7cmV0dXJuO312YXIgZD17dDpXLGQ6ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RlcycpLnZhbHVlLnNsaWNlKDAsNDApLGk6ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ludicpLnZhbHVlLnNsaWNlKDAsNDApLGI6ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2JhcicpLnZhbHVlLnNsaWNlKDAsODApfTt2YXIgZT1idG9hKHVuZXNjYXBlKGVuY29kZVVSSUNvbXBvbmVudChKU09OLnN0cmluZ2lmeShkKSkpKTtkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZnJtJykuc3R5bGUuZGlzcGxheT0nbm9uZSc7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ29rJykuc3R5bGUuZGlzcGxheT0nYmxvY2snO3ZhciBzPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ3NjcmlwdCcpO3Muc3JjPSdodHRwczovL2NkbmpzLmNsb3VkZmxhcmUuY29tL2FqYXgvbGlicy9xcmNvZGVqcy8xLjAuMC9xcmNvZGUubWluLmpzJztzLm9ubG9hZD1mdW5jdGlvbigpe25ldyBRUkNvZGUoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3FkJykse3RleHQ6J1BST0ZFRjonK2Usd2lkdGg6MTg0LGhlaWdodDoxODQsY29sb3JEYXJrOicjMGQyMTM3Jyxjb2xvckxpZ2h0OicjZmZmJyxjb3JyZWN0TGV2ZWw6UVJDb2RlLkNvcnJlY3RMZXZlbC5NfSk7fTtkb2N1bWVudC5oZWFkLmFwcGVuZENoaWxkKHMpO308XC9zY3JpcHQ+PC9ib2R5PjwvaHRtbD4=";
+
+// ===================== EIXOS =====================
+var EIXOS = [
+  {id:0, s:"Ginastica", n:"Ginastica, Exercicio e Saude", ic:"&#129336;",
+   kw:["ginastica","exercicio","saude","fitness","musculacao","pilates","yoga","alongamento","funcional","aerobico"]},
+  {id:1, s:"Lutas/Dancas", n:"Lutas e Dancas", ic:"&#129355;",
+   kw:["luta","danca","capoeira","judo","karate","boxe","jiu","taekwondo","samba","forro","ballet","hip-hop","break","zumba","ritmica","marcial","combate"]},
+  {id:2, s:"Jogos/Esportes", n:"Jogos e Esportes", ic:"&#9917;",
+   kw:["futebol","futsal","volei","basquete","handebol","tenis","ping","badminton","natacao","atletismo","corrida","salto","jogo","esporte","beisebol","rugby"]},
+  {id:3, s:"Esporte Adaptado", n:"Esporte Adaptado", ic:"&#9855;",
+   kw:["adaptado","paraolimpico","inclusao","cadeirante","deficiencia","boccia","goalball","paralimpico","acessibilidade"]},
+  {id:4, s:"Cultura Digital", n:"Cultura Digital e Praticas Alternativas", ic:"&#128187;",
+   kw:["digital","game","esport","virtual","tecnologia","alternativa","slackline","parkour","acrobacia","malabares","tai","meditacao","mindfulness"]},
+  {id:5, s:"Esportes Radicais", n:"Esportes Radicais", ic:"&#127940;",
+   kw:["radical","surf","skate","escalada","rappel","mountain","trilha","aventura","outdoor","rafting","kitesurf","bmx","ciclismo"]}
+];
+
+function classify(name) {
+  var n = name.toLowerCase().replace(/[^a-z]/g,"");
+  for (var i=0; i<EIXOS.length; i++)
+    for (var j=0; j<EIXOS[i].kw.length; j++)
+      if (n.indexOf(EIXOS[i].kw[j].replace(/[^a-z]/g,"")) >= 0) return EIXOS[i].id;
+  return 2;
+}
+
+// ===================== NAVIGATION =====================
+function goTo(s) {
+  document.getElementById("screen-"+state.step).classList.remove("active");
+  state.step = s;
+  document.getElementById("screen-"+s).classList.add("active");
+  updateNav();
+  if (s===4) renderMatrix();
+  if (s===5) renderReport();
+  window.scrollTo(0,0);
+}
+function nextStep(from) { state.done.add(from); goTo(from+1); }
+function updateNav() {
+  document.querySelectorAll(".si").forEach(function(el) {
+    var s = parseInt(el.dataset.step);
+    el.classList.toggle("active", s===state.step);
+    el.classList.toggle("done", state.done.has(s) && s!==state.step);
+  });
+  var h = "";
+  for (var i=1; i<=5; i++) {
+    var c = "hs" + (i===state.step?" active":state.done.has(i)?" done":"");
+    h += '<div class="'+c+'" onclick="goTo('+i+')"></div>';
+  }
+  document.getElementById("hsteps").innerHTML = h;
+}
+
+// ===================== PRINT SCREEN =====================
+
+
+
+// ===================== SCANNER =====================
+var scanStream=null, scanFrame=null, scanCanvas=null, scanCtx=null;
+function openScanner() {
+  document.getElementById("scanOverlay").classList.add("open");
+  scanCanvas = document.createElement("canvas");
+  scanCtx = scanCanvas.getContext("2d");
+
+  // Preferência: BarcodeDetector (Chrome/Android) -> funciona sem libs externas
+  var canBD = ("BarcodeDetector" in window);
+  var detector = null;
+  if (canBD) {
+    try { detector = new BarcodeDetector({formats:["qr_code"]}); } catch(e) { detector = null; }
+  }
+
+  function startCamera(){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:640},height:{ideal:640}}})
+      .then(function(stream) {
+        scanStream = stream;
+        var vid = document.getElementById("scanVideo");
+        vid.srcObject = stream;
+        vid.play();
+        vid.addEventListener("loadedmetadata", function() {
+          scanCanvas.width = vid.videoWidth || 640;
+          scanCanvas.height = vid.videoHeight || 640;
+          scanLoop(vid, detector);
+        }, {once:true});
+      })
+      .catch(function() {
+        closeScanner();
+        alert("Nao foi possivel acessar a camera. Verifique as permissoes do navegador.");
+      });
+  }
+
+  if (detector) {
+    startCamera();
+  } else {
+    // Fallback: jsQR via CDN (pode funcionar offline se estiver em cache)
+    loadScript("https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js", function() {
+      startCamera();
+    });
+  }
+}
+
+function scanLoop(vid, detector) {
+  if (!scanStream) return;
+
+  scanCtx.drawImage(vid, 0, 0, scanCanvas.width, scanCanvas.height);
+
+  // BarcodeDetector
+  if (detector) {
+    detector.detect(scanCanvas).then(function(codes){
+      if (codes && codes[0] && codes[0].rawValue) {
+        handleScanValue(codes[0].rawValue);
+      } else {
+        requestAnimationFrame(function(){ scanLoop(vid, detector); });
+      }
+    }).catch(function(){
+      requestAnimationFrame(function(){ scanLoop(vid, detector); });
+    });
+    return;
+  }
+
+  // jsQR fallback
+  try{
+    var img = scanCtx.getImageData(0,0,scanCanvas.width,scanCanvas.height);
+    var code = jsQR(img.data,img.width,img.height,{inversionAttempts:"dontInvert"});
+    if (code && code.data) {
+      handleScanValue(code.data);
+      return;
+    }
+  }catch(e){}
+  requestAnimationFrame(function(){ scanLoop(vid, detector); });
+}
+
+function handleScanValue(value){
+  var fb = document.getElementById("scanFb");
+  fb.style.transform = "scale(1)";
+  setTimeout(function(){ fb.style.transform="scale(0)"; }, 700);
+
+  if (value.indexOf("PROFEF:") !== 0) {
+    alert("QR Code invalido. Escaneie o QR gerado pelo formulario ProfEF-BA.");
+    return;
+  }
+  var b64 = value.substring(7);
+  try {
+    var json = decodeURIComponent(escape(atob(b64)));
+    var data = JSON.parse(json);
+    if (!data || !data.t || !data.t.length) throw 0;
+    state.respostas.push({talp:data.t, desej:data.d||"", inv:data.i||"", bar:data.b||""});
+    renderRespostas();
+    closeScanner();
+    saveAll();
+    toast("Resposta importada com sucesso!");
+  } catch(e) {
+    alert("Nao foi possivel ler a resposta. Tente novamente.");
+  }
+}
+
+function closeScanner() {
+  if (scanFrame) { cancelAnimationFrame(scanFrame); scanFrame=null; }
+  if (scanStream) { scanStream.getTracks().forEach(function(t){t.stop();}); scanStream=null; }
+  document.getElementById("scanOverlay").classList.remove("open");
+}
+
+// ===================== IMPORT MODAL =====================
+function openImport() {
+  document.getElementById("importModal").classList.add("open");
+  document.getElementById("importCode").value = "";
+  document.getElementById("importErr").style.display = "none";
+  setTimeout(function(){ document.getElementById("importCode").focus(); }, 100);
+}
+function closeImport() { document.getElementById("importModal").classList.remove("open"); }
+function doImport() {
+  var raw = document.getElementById("importCode").value.trim();
+  var err = document.getElementById("importErr");
+  try {
+    var parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    var json = {talp:parsed.t||parsed.talp||[], prac:parsed.p||[], desejo:parsed.d||"", inv:parsed.i||"", barr:parsed.b||""};
+    if (!json.talp.length) throw new Error();
+    state.respostas.push(json);
+    closeImport();
+    updateRespostasUI();
+    renderTalpAnalysis();
+  } catch(e) { err.style.display="block"; }
+}
+
+// ===================== RESPOSTAS UI =====================
+function updateRespostasUI() {
+  var n = state.respostas.length;
+  document.getElementById("respostasCount").textContent = n;
+  var sec = document.getElementById("respostasSection");
+  var list = document.getElementById("respostasList");
+  if (!n) { sec.style.display="none"; return; }
+  sec.style.display = "block";
+  list.innerHTML = state.respostas.map(function(r,i) {
+    var words = r.talp.map(function(w,j){return '<span class="ri-wt">'+(j+1)+". "+w+"</span>";}).join("");
+    var des = r.desejo ? '<div style="margin-top:6px;font-size:11px;color:var(--text3);">'+r.desejo+"</div>" : "";
+    return '<div class="ri"><div class="ri-h"><span class="ri-n">Estudante #'+(i+1)+'</span><button class="ri-x" onclick="removeResp('+i+')">x</button></div><div class="ri-w">'+words+"</div>"+des+"</div>";
+  }).join("");
+  var desejos = state.respostas.map(function(r){return r.desejo;}).filter(Boolean);
+  var invs = state.respostas.map(function(r){return r.inv;}).filter(Boolean);
+  var barrs = state.respostas.map(function(r){return r.barr;}).filter(Boolean);
+  var prats = state.respostas.reduce(function(acc,r){return acc.concat(r.prac||[]);}, []);
+  prats = prats.filter(function(v,i,a){return a.indexOf(v)===i;});
+  if (prats.length) document.getElementById("praticasVividas").value = prats.join(", ");
+  if (desejos.length) document.getElementById("praticasDesejadas").value = desejos.join(" - ");
+  if (invs.length) document.getElementById("praticasInv").value = invs.join(" - ");
+  if (barrs.length) document.getElementById("barreiras").value = barrs.join(" - ");
+}
+function removeResp(i) { state.respostas.splice(i,1); updateRespostasUI(); renderTalpAnalysis(); }
+
+// ===================== TALP ANALYSIS =====================
+function renderTalpAnalysis() {
+  var all = state.respostas.reduce(function(a,r){return a.concat(r.talp);}, []).concat(state.talp.map(function(t){return t.w;}));
+  var el = document.getElementById("talpAnalysis");
+  if (!all.length) { el.style.display="none"; return; }
+  el.style.display = "block";
+  var freq = {};
+  all.forEach(function(w){ var k=w.toLowerCase().trim(); freq[k]=(freq[k]||0)+1; });
+  var sorted = Object.keys(freq).map(function(k){return [k,freq[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var half = Math.ceil(sorted.length/2);
+  document.getElementById("talpCount").textContent = all.length;
+  document.getElementById("talpStudents").textContent = state.respostas.length + (state.talp.length?1:0);
+  document.getElementById("nucleoCentral").innerHTML = sorted.slice(0,half).map(function(e){
+    return '<span class="tts">'+e[0]+' <span style="opacity:.5;font-size:10px;">('+e[1]+')</span></span>';
+  }).join("") || "<span style='color:var(--text3);font-size:13px;'>-</span>";
+  document.getElementById("elementosPerifericos").innerHTML = sorted.slice(half).map(function(e){
+    return '<span class="tts">'+e[0]+"</span>";
+  }).join("") || "<span style='color:var(--text3);font-size:13px;'>-</span>";
+}
+
+// ===================== TALP MANUAL =====================
+function addTalpBtn() {
+  var inp = document.getElementById("talpInput"), w = inp.value.trim();
+  if (!w) return;
+  state.talp.push({w:w, o:state.talp.length+1});
+  inp.value = "";
+  renderTalp();
+}
+function removeTalp(i) { state.talp.splice(i,1); state.talp.forEach(function(t,i){t.o=i+1;}); renderTalp(); }
+function renderTalp() {
+  var c = document.getElementById("talpWords");
+  if (!state.talp.length) { c.innerHTML='<span style="color:rgba(255,255,255,.3);font-size:13px;padding:4px;">As palavras aparecerao aqui...</span>'; }
+  else { c.innerHTML = state.talp.map(function(t,i){return '<span class="tt" onclick="removeTalp('+i+')"><span class="ord">'+t.o+".</span> "+t.w+' <span style="font-size:10px;opacity:.6;">x</span></span>';}).join(""); }
+  renderTalpAnalysis();
+}
+
+// ===================== PRACTICES =====================
+function addP(u) {
+  var inp = document.getElementById("u"+u+"inp"), name = inp.value.trim();
+  if (!name) return;
+  state.prac[u].push({n:name, e:classify(name)});
+  inp.value = "";
+  renderPrac(u);
+}
+function removeP(u,i) { state.prac[u].splice(i,1); renderPrac(u); }
+function renderPrac(u) {
+  var c = document.getElementById("u"+u+"list"), list = state.prac[u];
+  if (!list.length) { c.innerHTML='<div class="es">Nenhuma pratica adicionada</div>'; return; }
+  c.innerHTML = list.map(function(p,i) {
+    return '<div class="pitem"><span>'+p.n+'</span><span style="display:flex;align-items:center;gap:4px;"><span class="etag t'+p.e+'">'+EIXOS[p.e].s+'</span><button class="rbtn" onclick="removeP('+u+','+i+')">x</button></span></div>';
+  }).join("");
+}
+
+// ===================== MATRIX =====================
+function getAllPrac() {
+  var all = [];
+  [1,2,3].forEach(function(u){ state.prac[u].forEach(function(p){ all.push({n:p.n,e:p.e,u:u}); }); });
+  return all;
+}
+function renderMatrix() {
+  var all = getAllPrac(), total = all.length;
+  var counts = [0,0,0,0,0,0];
+  all.forEach(function(p){counts[p.e]++;});
+  var cov = counts.filter(function(c){return c>0;}).length;
+  var b = document.getElementById("indBadge");
+  var lvl, icon, title, sub;
+  if (!total) { lvl="yellow";icon="&#128993;";title="Nenhuma pratica adicionada";sub="Adicione praticas nas Unidades Didaticas."; }
+  else if (cov>=3) { lvl="green";icon="&#128994;";title="Equilibrio Ampliado";sub=cov+" eixos contemplados. Planejamento diversificado!"; }
+  else if (cov===2) { lvl="yellow";icon="&#128993;";title="Equilibrio Parcial";sub=cov+" eixos. Considere ampliar a diversidade."; }
+  else { lvl="red";icon="&#128308;";title="Concentracao Excessiva";sub="Apenas "+cov+" eixo(s). Risco de reducao curricular."; }
+  b.className = "ibadge "+lvl;
+  b.innerHTML = '<div class="ibig">'+icon+'</div><div><div class="ibt">'+title+'</div><div class="ibs">'+sub+"</div></div>";
+  document.getElementById("checklist").innerHTML = EIXOS.map(function(e){
+    var ok = counts[e.id]>0;
+    return '<div class="cki '+(ok?"ok":"nok")+'">'+e.ic+" "+(ok?"V":"X")+" "+e.n+"</div>";
+  }).join("");
+  document.getElementById("matrixGrid").innerHTML = EIXOS.map(function(e){
+    var cnt=counts[e.id], pct=total?Math.round(cnt/total*100):0;
+    var tags = all.filter(function(p){return p.e===e.id;}).map(function(p){return '<span class="ept">'+p.n+"</span>";}).join("");
+    return '<div class="ec"><div class="eh e'+e.id+'"><span style="font-size:20px;">'+e.ic+'</span><span class="en">'+e.n+'</span></div>'
+      +'<div class="ebody"><div class="ebar"><div class="ebarfill b'+e.id+'" style="width:'+pct+'%"></div></div>'
+      +'<div class="estats"><span>'+cnt+' pratica(s)</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;">'+pct+'%</span></div>'
+      +'<div style="margin-top:10px;">'+(tags||'<span style="font-size:11px;color:var(--text3);">Nenhuma pratica</span>')+"</div></div></div>";
+  }).join("");
+  if (total) { document.getElementById("donutSec").style.display="block"; renderDonut(counts,total); }
+}
+function renderDonut(counts, total) {
+  var colors=["#2d5a8e","#1b7a6e","#8b5a1a","#5a2d7a","#1a6b8b","#7a1a1a"];
+  var cx=90,cy=90,r=70,ri=42,start=-Math.PI/2,paths="";
+  counts.forEach(function(c,i) {
+    if (!c) return;
+    var a=c/total*2*Math.PI,x1=cx+r*Math.cos(start),y1=cy+r*Math.sin(start);
+    var x2=cx+r*Math.cos(start+a),y2=cy+r*Math.sin(start+a);
+    var xi1=cx+ri*Math.cos(start),yi1=cy+ri*Math.sin(start);
+    var xi2=cx+ri*Math.cos(start+a),yi2=cy+ri*Math.sin(start+a);
+    var lg=a>Math.PI?1:0;
+    paths+="<path d='M "+xi1+" "+yi1+" L "+x1+" "+y1+" A "+r+" "+r+" 0 "+lg+" 1 "+x2+" "+y2+" L "+xi2+" "+yi2+" A "+ri+" "+ri+" 0 "+lg+" 0 "+xi1+" "+yi1+" Z' fill='"+colors[i]+"' opacity='.9'/>";
+    start+=a;
+  });
+  document.getElementById("donutSvg").innerHTML = paths
+    +"<text x='"+cx+"' y='"+(cy-6)+"' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='#1a1a2e'>"+total+"</text>"
+    +"<text x='"+cx+"' y='"+(cy+12)+"' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b7a8d'>praticas</text>";
+  document.getElementById("donutLeg").innerHTML = EIXOS.map(function(e,i){
+    return '<div class="dli"><div class="dld" style="background:'+colors[i]+'"></div><span style="font-size:12px;">'+e.s+'</span><span class="dlp">'+Math.round(counts[i]/total*100)+"%</span></div>";
+  }).join("");
+}
+
+// ===================== REPORT =====================
+function gv(id) { var el=document.getElementById(id); return el&&el.value?el.value:"-"; }
+function renderReport() {
+  document.getElementById("rTitle").textContent = "Plano de Curso Anual - "+gv("serie")+" - Turma "+gv("turma");
+  var meta = [["Professor(a)",gv("professor")],["Escola",gv("escola")],["Municipio",gv("municipio")],["Territorio",gv("territorio")],["Ano Letivo",gv("anoLetivo")],["Turma",gv("serie")+" | "+gv("numEst")+" estudantes"]];
+  document.getElementById("rMeta").innerHTML = meta.map(function(m){return '<div class="rmi"><div class="lbl">'+m[0]+"</div><div class='val'>"+m[1]+"</div></div>";}).join("");
+  document.getElementById("rCtx").innerHTML = "<h3>1. Contextualizacao Escolar</h3>"
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">'
+    +'<div><strong style="font-size:13px;">Espacos fisicos:</strong><p style="font-size:13px;color:var(--text3);margin-top:4px;">'+gv("espacos")+"</p></div>"
+    +'<div><strong style="font-size:13px;">Materiais:</strong><p style="font-size:13px;color:var(--text3);margin-top:4px;">'+gv("materiais")+"</p></div></div>"
+    +'<strong style="font-size:13px;">Contexto comunitario:</strong><p style="font-size:13px;color:var(--text3);margin-top:4px;">'+gv("contexto")+"</p>";
+  var talpWords = state.talp.map(function(t){return t.w;}).concat(state.respostas.reduce(function(a,r){return a.concat(r.talp);},[])).join(", ") || "-";
+  document.getElementById("rDiag").innerHTML = "<h3>2. Diagnostico TALP</h3>"
+    +'<p style="font-size:13px;margin-bottom:10px;"><strong>Evocacoes ('+state.respostas.length+' estudantes):</strong> '+talpWords+"</p>"
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+    +'<div><strong style="font-size:13px;">Praticas vivenciadas:</strong><p style="font-size:13px;color:var(--text3);">'+gv("praticasVividas")+"</p></div>"
+    +'<div><strong style="font-size:13px;">Praticas desejadas:</strong><p style="font-size:13px;color:var(--text3);">'+gv("praticasDesejadas")+"</p></div></div>";
+  var units = [1,2,3].map(function(u){
+    var tits=["","Unidade I - Consolidar","Unidade II - Aprofundar","Unidade III - Ampliar"];
+    var pl = state.prac[u].length ? state.prac[u].map(function(p){return p.n+" ["+EIXOS[p.e].s+"]";}).join(" - ") : "-";
+    return '<div class="ru u'+u+'"><h4>'+tits[u]+"</h4>"
+      +'<p style="font-size:13px;"><strong>Praticas:</strong> '+pl+"</p>"
+      +'<p style="font-size:13px;margin-top:6px;"><strong>Competencias:</strong> <span style="color:var(--text3);">'+gv("u"+u+"comp")+"</span></p>"
+      +'<p style="font-size:13px;margin-top:4px;"><strong>Avaliacao:</strong> <span style="color:var(--text3);">'+gv("u"+u+"aval")+"</span></p></div>";
+  }).join("");
+  document.getElementById("rUnit").innerHTML = "<h3>3. Unidades Didaticas</h3>"+units;
+  var all=getAllPrac(),total=all.length,counts=[0,0,0,0,0,0];
+  all.forEach(function(p){counts[p.e]++;});
+  var cov=counts.filter(function(c){return c>0;}).length;
+  var ind=cov>=3?"Equilibrio Ampliado":cov===2?"Equilibrio Parcial":"Concentracao Excessiva";
+  document.getElementById("rMat").innerHTML = "<h3>4. Matriz de Justica Curricular</h3>"
+    +'<p style="font-size:13px;margin-bottom:12px;"><strong>Indicador:</strong> '+ind+" ("+cov+"/6 eixos)</p>"
+    +EIXOS.map(function(e,i){
+      var ok=counts[i]>0;
+      return '<div class="cki '+(ok?"ok":"nok")+'" style="margin-bottom:6px;">'+e.n+' - <span style="font-family:monospace;font-size:12px;">'+counts[i]+' pratica(s) | '+Math.round(counts[i]/(total||1)*100)+"%</span></div>";
+    }).join("");
+  var missing=EIXOS.filter(function(e,i){return !counts[i];});
+  var recs="<ul style='padding-left:20px;font-size:13px;color:var(--text2);line-height:1.8;'>";
+  if (missing.length) recs+="<li>Eixos nao contemplados: <strong>"+missing.map(function(e){return e.n;}).join(", ")+"</strong>. Considere incluir no proximo ano.</li>";
+  recs+="<li>Reavalie ao final do ano com reaplicacao do TALP.</li></ul>";
+  recs+='<div style="margin-top:16px;padding:12px 16px;background:var(--cream);border-radius:6px;font-size:12px;color:var(--text3);">ProfEF-BA - Fundamentado no DCRB (2022) - ProEF/UESB - 2026</div>';
+  document.getElementById("rInd").innerHTML = "<h3>5. Indicacoes para Ampliacao Curricular</h3>"+recs;
+}
+
+// ===================== UTILS =====================
+/* ===================== OFFLINE (cache simples) =====================
+   Para o protótipo funcionar sem internet depois do 1º uso, registramos um Service Worker
+   inline que cacheia as libs externas (jsQR). */
+(function(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    var sw = `
+      const CACHE = "profefba-cache-v1";
+      const ASSETS = [
+        "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"
+      ];
+      self.addEventListener("install", (e) => {
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(()=>{}));
+        self.skipWaiting();
+      });
+      self.addEventListener("activate", (e) => {
+        e.waitUntil(self.clients.claim());
+      });
+      self.addEventListener("fetch", (e) => {
+        const url = e.request.url;
+        if(ASSETS.some(a => url.startsWith(a))){
+          e.respondWith(
+            caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+              const copy = resp.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+              return resp;
+            }).catch(()=>r))
+          );
+        }
+      });
+    `;
+    var blob = new Blob([sw], {type:"text/javascript"});
+    var url = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).catch(()=>{});
+  }catch(e){}
+})();
+
+function loadScript(src, cb) {
+  if (document.querySelector('script[src="'+src+'"]')) { cb(); return; }
+  var s = document.createElement("script"); s.src=src; s.onload=cb;
+  document.head.appendChild(s);
+}
+function toast(msg) {
+  var t = document.createElement("div");
+  t.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d2137;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:400;white-space:nowrap;pointer-events:none;";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();}, 3000);
+}
+document.addEventListener("keydown", function(e) {
+  if (e.key==="Escape") { closeScanner(); closeImport(); }
+});
+document.getElementById("importModal").addEventListener("click", function(e) {
+  if (e.target===this) closeImport();
+});
+
+// ===================== INIT =====================
+(function init(){
+  var saved = loadAll();
+  if(saved){
+    if(saved.state){
+      state.step = saved.state.step || 1;
+      state.talp = Array.isArray(saved.state.talp)? saved.state.talp : [];
+      state.respostas = Array.isArray(saved.state.respostas)? saved.state.respostas : [];
+      state.prac = saved.state.prac || {1:[],2:[],3:[]};
+      state.done = new Set(saved.state.done || []);
+    }
+    applyFields(saved.fields);
+  }
+  updateNav();
+  // re-render de módulos dependentes de estado
+  try{ renderTalp(); }catch(e){}
+  try{ renderRespostas(); }catch(e){}
+  try{ renderMatrix(); }catch(e){}
+  try{ [1,2,3].forEach(function(u){ renderPrac(u); }); }catch(e){}
+  // sempre inicia na Etapa 1 ao abrir o arquivo
+  try{ goTo(1); }catch(e){}
+})();
+</script>
+</body>
+</html>
