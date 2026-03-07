@@ -49,6 +49,28 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
 .screen.active{display:block;animation:fi .3s ease}
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
+/* HOME */
+.home{max-width:1100px;margin:0 auto;padding:32px 24px 64px;display:none}
+.home-h{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid var(--border)}
+.home-h h1{font-family:"Source Serif 4",serif;font-size:30px;line-height:1.15;color:var(--navy)}
+.home-h p{font-size:14px;color:var(--text3);max-width:680px}
+.home-actions{display:flex;gap:10px;flex-wrap:wrap}
+.home-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.eval-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;box-shadow:var(--s1)}
+.eval-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.eval-title{font-weight:700;font-size:14px;color:var(--navy)}
+.eval-date{font-size:11px;color:var(--text3);font-family:"IBM Plex Mono",monospace}
+.eval-meta{font-size:12px;color:var(--text2);line-height:1.6}
+.eval-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px}
+.eval-badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.05em;text-transform:uppercase}
+.eval-badge.green{background:#eaf5ee;color:var(--green);border:1px solid #a8d5b5}
+.eval-badge.yellow{background:#fef8e7;color:var(--yellow);border:1px solid #e8c97a}
+.eval-badge.red{background:#fdecea;color:var(--red);border:1px solid #e8b0a8}
+.eval-empty{background:#fff;border:1px dashed var(--border);border-radius:8px;padding:24px;color:var(--text3);font-size:14px;text-align:center}
+
+body.home-mode .snav,body.home-mode .main{display:none}
+body.home-mode .home{display:block}
+
 /* PAGE HEADER */
 .ph{margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
 .badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--gold2);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px}
@@ -217,6 +239,8 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
 .scline{position:absolute;left:16px;right:16px;height:2px;background:linear-gradient(to right,transparent,#25a393,transparent);animation:scl 2s ease-in-out infinite;box-shadow:0 0 8px #25a393}
 @keyframes scl{0%{top:16px}50%{top:calc(100% - 18px)}100%{top:16px}}
 .sclabel{color:#fff;font-size:14px;margin-top:24px;opacity:.85;text-align:center;line-height:1.5;max-width:300px}
+.scalt{margin-top:14px;display:flex;justify-content:center}
+.scalt .btn{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
 .scclose{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);border:none;border-radius:50%;width:40px;height:40px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .scfb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(27,122,110,.85);color:#fff;font-size:48px;border-radius:16px;opacity:0;transition:opacity .2s;pointer-events:none}
 .scfb.show{opacity:1}
@@ -251,9 +275,13 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
 .macts{display:flex;gap:10px;justify-content:flex-end}
 
 @media print{
+  .home{display:none!important}
   .hdr,.snav,.acts,.pnote,.pstb{display:none!important}
-  .pso{display:block!important}
-  .main{display:none!important}
+  .main{display:block!important;max-width:none!important;padding:0!important;margin:0!important}
+  .screen{display:none!important}
+  #screen-5{display:block!important}
+  #screen-5 .ph{display:none!important}
+  body{background:#fff!important}
 }
 </style>
 </head>
@@ -281,6 +309,19 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
     <div class="si" onclick="goTo(5)" data-step="5"><div class="sn">5</div><span>Relatorio Final</span></div>
   </div>
 </nav>
+
+<section class="home" id="homeScreen">
+  <div class="home-h">
+    <div>
+      <h1>Painel de Avaliacoes</h1>
+      <p>Consulte as avaliacoes ja exportadas em PDF e acesse o fluxo de etapas para criar um novo planejamento.</p>
+    </div>
+    <div class="home-actions">
+      <button class="btn btn-p" onclick="newPlanejamento()">+ Novo Planejamento</button>
+    </div>
+  </div>
+  <div class="home-list" id="homeEvalList"></div>
+</section>
 
 <main class="main">
 
@@ -516,8 +557,8 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
   <div class="acts">
     <button class="btn btn-s" onclick="goTo(4)">&larr; Voltar</button>
     <div class="actsr">
-      <button class="btn btn-g" onclick="window.print()">&#128424; Exportar PDF</button>
-      <button class="btn btn-p" onclick="resetAll(); location.reload()">&#8635; Novo Planejamento</button>
+      <button class="btn btn-g" onclick="exportPdf()">&#128424; Exportar PDF</button>
+      <button class="btn btn-p" onclick="salvarAvaliacao()">&#128190; Salvar</button>
     </div>
   </div>
 </div>
@@ -534,6 +575,10 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
     <div class="scfb" id="scanFb">&#10003;</div>
   </div>
   <div class="sclabel">Aponte para o QR Code<br>gerado na tela do estudante</div>
+  <div class="scalt">
+    <button class="btn bsm" onclick="openScanPhotoPicker()">Ler QR por foto</button>
+    <input type="file" id="scanPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="onScanPhotoSelected(event)">
+  </div>
 </div>
 
 <!-- MODAL IMPORTAR -->
@@ -557,11 +602,14 @@ var state = {
   done: new Set(),
   talp: [],
   respostas: [],
-  prac: {1:[], 2:[], 3:[]}
+  prac: {1:[], 2:[], 3:[]},
+  currentEvalId: null
 };
 
 /* ===================== PERSISTÊNCIA (localStorage) ===================== */
 var LS_KEY = "profefba_v2_plan";
+var LS_EVAL_KEY = "profefba_v2_avaliacao_turma";
+var LS_EVAL_HISTORY_KEY = "profefba_v2_avaliacoes_historico";
 
 function collectFields(){
   var ids = [
@@ -592,12 +640,241 @@ function saveAll(){
         talp: state.talp,
         respostas: state.respostas,
         prac: state.prac,
+        currentEvalId: state.currentEvalId,
         done: Array.from(state.done || [])
       },
       fields: collectFields()
     };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
   }catch(e){}
+}
+function buildAvaliacaoPayload(existingId){
+  var all = getAllPrac(), total = all.length, counts = [0,0,0,0,0,0];
+  all.forEach(function(p){ counts[p.e]++; });
+  var cobertura = counts.filter(function(c){ return c>0; }).length;
+  var indicador = cobertura>=3 ? "Equilibrio Ampliado" : (cobertura===2 ? "Equilibrio Parcial" : "Concentracao Excessiva");
+  return {
+    id: existingId || (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8)),
+    generatedAt: new Date().toISOString(),
+    identificacaoTurma: {
+      escola: gv("escola"),
+      municipio: gv("municipio"),
+      territorio: gv("territorio"),
+      serie: gv("serie"),
+      turma: gv("turma"),
+      estudantes: gv("numEst"),
+      professor: gv("professor"),
+      anoLetivo: gv("anoLetivo")
+    },
+    avaliacaoTurma: {
+      respostasTalp: state.respostas,
+      palavrasTalpManuais: state.talp,
+      praticasVividas: gv("praticasVividas"),
+      praticasDesejadas: gv("praticasDesejadas"),
+      praticasInvisibilizadas: gv("praticasInv"),
+      barreiras: gv("barreiras")
+    },
+    unidadesDidaticas: {
+      unidade1: { praticas: state.prac[1], competencias: gv("u1comp"), avaliacao: gv("u1aval") },
+      unidade2: { praticas: state.prac[2], competencias: gv("u2comp"), avaliacao: gv("u2aval") },
+      unidade3: { praticas: state.prac[3], competencias: gv("u3comp"), avaliacao: gv("u3aval") }
+    },
+    matrizCurricular: {
+      indicador: indicador,
+      eixosCobertos: cobertura,
+      totalEixos: 6,
+      totalPraticas: total,
+      distribuicaoPorEixo: EIXOS.map(function(e,i){
+        return { eixo: e.n, quantidade: counts[i], percentual: Math.round((counts[i]/(total||1))*100) };
+      })
+    }
+  };
+}
+function upsertAvaliacaoHistorico(payload){
+  var hist = loadAvaliacoesHistorico();
+  var idx = hist.findIndex(function(item){ return (item.id||"") === payload.id; });
+  if(idx>=0) hist[idx] = payload;
+  else hist.unshift(payload);
+  localStorage.setItem(LS_EVAL_HISTORY_KEY, JSON.stringify(hist.slice(0,50)));
+  localStorage.setItem(LS_EVAL_KEY, JSON.stringify(payload));
+}
+function saveAvaliacaoTurma(){
+  try{
+    var payload = buildAvaliacaoPayload(state.currentEvalId);
+    upsertAvaliacaoHistorico(payload);
+    state.currentEvalId = payload.id;
+    return payload;
+  }catch(e){ return null; }
+}
+function salvarAvaliacao(){
+  saveAvaliacaoTurma();
+  resetAll();
+  openHome();
+  toast("Avaliacao salva com sucesso.");
+}
+function exportPdf(){
+  renderReport();
+  window.print();
+}
+function loadAvaliacoesHistorico(){
+  try{
+    var rawHist = localStorage.getItem(LS_EVAL_HISTORY_KEY);
+    var hist = rawHist ? JSON.parse(rawHist) : [];
+    if(Array.isArray(hist) && hist.length) return hist;
+  }catch(e){}
+  try{
+    var legacyRaw = localStorage.getItem(LS_EVAL_KEY);
+    if(!legacyRaw) return [];
+    var legacy = JSON.parse(legacyRaw);
+    return legacy ? [legacy] : [];
+  }catch(e){}
+  return [];
+}
+function indicadorClass(ind){
+  if(ind==="Equilibrio Ampliado") return "green";
+  if(ind==="Equilibrio Parcial") return "yellow";
+  return "red";
+}
+function formatDateTime(iso){
+  if(!iso) return "-";
+  try{
+    return new Date(iso).toLocaleString("pt-BR", {dateStyle:"short", timeStyle:"short"});
+  }catch(e){ return iso; }
+}
+function renderHome(){
+  var root = document.getElementById("homeEvalList");
+  if(!root) return;
+  var list = loadAvaliacoesHistorico();
+
+  if(!list.length){
+    root.innerHTML = '<div class="eval-empty">Nenhuma avaliacao exportada ainda. Clique em <strong>Novo Planejamento</strong> para iniciar.</div>';
+    return;
+  }
+  root.innerHTML = list.map(function(ev, idx){
+    var idt = ev.identificacaoTurma || {};
+    var mat = ev.matrizCurricular || {};
+    var at = ev.avaliacaoTurma || {};
+    var turmaLabel = (idt.serie||"-") + " | Turma " + (idt.turma||"-");
+    return '<article class="eval-card">'
+      +'<div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(ev.generatedAt)+'</div></div>'
+      +'<div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div>'
+      +'<div class="eval-meta"><strong>Escola:</strong> '+(idt.escola||"-")+'<br>'
+      +'<strong>Professor(a):</strong> '+(idt.professor||"-")+'<br>'
+      +'<strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br>'
+      +'<strong>Praticas planejadas:</strong> '+(mat.totalPraticas||0)+'</div>'
+      +'<div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+(ev.id||"")+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+(ev.id||"")+'\','+idx+')">Excluir</button></div>'
+      +'</article>';
+  }).join("");
+}
+function openHome(){
+  document.body.classList.add("home-mode");
+  renderHome();
+}
+function resetPlanState(){
+  state.step = 1;
+  state.done = new Set();
+  state.talp = [];
+  state.respostas = [];
+  state.prac = {1:[], 2:[], 3:[]};
+  state.currentEvalId = null;
+}
+function clearFormFields(){
+  [
+    "escola","municipio","territorio","serie","turma","numEst","aulas","professor","anoLetivo",
+    "espacos","materiais","contexto",
+    "praticasVividas","praticasDesejadas","praticasInv","barreiras",
+    "u1comp","u1aval","u2comp","u2aval","u3comp","u3aval",
+    "talpInput","u1inp","u2inp","u3inp","importCode"
+  ].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(el.tagName==="SELECT") { el.selectedIndex = 0; return; }
+    if(typeof el.value!=="undefined") el.value = (el.defaultValue || "");
+  });
+}
+function newPlanejamento(){
+  resetPlanState();
+  clearFormFields();
+  resetAll();
+  updateNav();
+  try{ renderTalp(); }catch(e){}
+  try{ updateRespostasUI(); }catch(e){}
+  try{ renderTalpAnalysis(); }catch(e){}
+  try{ [1,2,3].forEach(function(u){ renderPrac(u); }); }catch(e){}
+  try{ renderMatrix(); }catch(e){}
+  startFlow(1);
+}
+function aplicarAvaliacaoNoPlano(ev){
+  if(!ev) return;
+  resetPlanState();
+  clearFormFields();
+  var idt = ev.identificacaoTurma || {};
+  var av = ev.avaliacaoTurma || {};
+  var ud = ev.unidadesDidaticas || {};
+  applyFields({
+    escola: idt.escola || "",
+    municipio: idt.municipio || "",
+    territorio: idt.territorio || "",
+    serie: idt.serie || "",
+    turma: idt.turma || "",
+    numEst: idt.estudantes || "",
+    professor: idt.professor || "",
+    anoLetivo: idt.anoLetivo || "",
+    praticasVividas: av.praticasVividas || "",
+    praticasDesejadas: av.praticasDesejadas || "",
+    praticasInv: av.praticasInvisibilizadas || "",
+    barreiras: av.barreiras || "",
+    u1comp: (ud.unidade1 && ud.unidade1.competencias) || "",
+    u1aval: (ud.unidade1 && ud.unidade1.avaliacao) || "",
+    u2comp: (ud.unidade2 && ud.unidade2.competencias) || "",
+    u2aval: (ud.unidade2 && ud.unidade2.avaliacao) || "",
+    u3comp: (ud.unidade3 && ud.unidade3.competencias) || "",
+    u3aval: (ud.unidade3 && ud.unidade3.avaliacao) || ""
+  });
+  state.respostas = Array.isArray(av.respostasTalp) ? av.respostasTalp : [];
+  state.talp = Array.isArray(av.palavrasTalpManuais) ? av.palavrasTalpManuais : [];
+  state.prac = {
+    1: (ud.unidade1 && Array.isArray(ud.unidade1.praticas)) ? ud.unidade1.praticas : [],
+    2: (ud.unidade2 && Array.isArray(ud.unidade2.praticas)) ? ud.unidade2.praticas : [],
+    3: (ud.unidade3 && Array.isArray(ud.unidade3.praticas)) ? ud.unidade3.praticas : []
+  };
+  updateNav();
+  try{ renderTalp(); }catch(e){}
+  try{ updateRespostasUI(); }catch(e){}
+  try{ renderTalpAnalysis(); }catch(e){}
+  try{ [1,2,3].forEach(function(u){ renderPrac(u); }); }catch(e){}
+  try{ renderMatrix(); }catch(e){}
+  saveAll();
+}
+function abrirAvaliacaoEdicao(evalId, index){
+  var list = loadAvaliacoesHistorico();
+  var ev = list.find(function(item){ return (item.id||"")===evalId; });
+  if(!ev && typeof index==="number" && list[index]) ev = list[index];
+  if(!ev && list.length) ev = list[0];
+  if(!ev){
+    alert("Nao foi possivel abrir a avaliacao selecionada.");
+    return;
+  }
+  aplicarAvaliacaoNoPlano(ev);
+  state.currentEvalId = ev.id || null;
+  startFlow(1);
+}
+function excluirAvaliacao(evalId, index){
+  var list = loadAvaliacoesHistorico();
+  var idx = list.findIndex(function(item){ return (item.id||"")===evalId; });
+  if(idx<0 && typeof index==="number" && list[index]) idx = index;
+  if(idx<0) return;
+  if(!confirm("Deseja excluir esta avaliacao salva?")) return;
+  var removed = list.splice(idx,1)[0];
+  localStorage.setItem(LS_EVAL_HISTORY_KEY, JSON.stringify(list));
+  if(list.length) localStorage.setItem(LS_EVAL_KEY, JSON.stringify(list[0]));
+  else localStorage.removeItem(LS_EVAL_KEY);
+  if(removed && removed.id && state.currentEvalId===removed.id) state.currentEvalId = null;
+  renderHome();
+}
+function startFlow(step){
+  document.body.classList.remove("home-mode");
+  goTo(step || 1);
 }
 function loadAll(){
   try{
@@ -676,10 +953,82 @@ function updateNav() {
 
 // ===================== SCANNER =====================
 var scanStream=null, scanFrame=null, scanCanvas=null, scanCtx=null;
+var scanDetector=null;
+function getCameraErrorMessage(err){
+  var code = err && err.name ? err.name : "";
+  if(code==="NotAllowedError" || code==="PermissionDeniedError"){
+    return "Permissao da camera bloqueada no navegador. Libere o acesso e tente novamente.";
+  }
+  if(code==="NotFoundError" || code==="DevicesNotFoundError"){
+    return "Nenhuma camera foi encontrada neste dispositivo.";
+  }
+  if(code==="NotReadableError" || code==="TrackStartError"){
+    return "A camera esta em uso por outro app. Feche outros apps de camera e tente novamente.";
+  }
+  if(code==="OverconstrainedError" || code==="ConstraintNotSatisfiedError"){
+    return "Nao foi possivel iniciar com a camera traseira. Tentando outro modo de camera.";
+  }
+  return "Nao foi possivel acessar a camera. Verifique permissoes, HTTPS e tente novamente.";
+}
+function cameraErrorDetails(err){
+  if(!err) return "";
+  var code = err.name || "UnknownError";
+  var msg = err.message ? (" - " + err.message) : "";
+  return " ["+code+msg+"]";
+}
+function requestCameraWithFallback(){
+  function tryAttempts(attempts, lastErr){
+    var i = 0;
+    function tryNext(err){
+      if(i>=attempts.length) return Promise.reject(err || lastErr || new Error("camera_failed"));
+      var c = attempts[i++];
+      return navigator.mediaDevices.getUserMedia(c).catch(tryNext);
+    }
+    return tryNext(lastErr);
+  }
+
+  var attempts = [
+    {video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}, audio:false},
+    {video:{facingMode:"environment"}, audio:false},
+    {video:true, audio:false},
+    {video:{facingMode:"user"}, audio:false}
+  ];
+
+  return tryAttempts(attempts).catch(function(firstErr){
+    // Em alguns Android/iOS, facingMode falha mesmo com permissao OK.
+    // Fallback extra: tentar por deviceId de cada camera disponível.
+    return navigator.mediaDevices.enumerateDevices().then(function(devs){
+      var cams = (devs||[]).filter(function(d){ return d.kind==="videoinput" && d.deviceId; });
+      if(!cams.length) throw firstErr;
+      var byBackFirst = cams.slice().sort(function(a,b){
+        var ra = /(back|rear|traseira|environment)/i.test(a.label||"") ? 0 : 1;
+        var rb = /(back|rear|traseira|environment)/i.test(b.label||"") ? 0 : 1;
+        return ra-rb;
+      });
+      var byDeviceId = byBackFirst.map(function(c){
+        return {video:{deviceId:{exact:c.deviceId}}, audio:false};
+      });
+      return tryAttempts(byDeviceId, firstErr);
+    }).catch(function(enumErr){
+      return Promise.reject(enumErr || firstErr);
+    });
+  });
+}
 function openScanner() {
   document.getElementById("scanOverlay").classList.add("open");
   scanCanvas = document.createElement("canvas");
   scanCtx = scanCanvas.getContext("2d");
+
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    closeScanner();
+    alert("Este navegador nao oferece suporte a camera via getUserMedia. Use Chrome/Safari atualizados em HTTPS.");
+    return;
+  }
+  if(!window.isSecureContext){
+    closeScanner();
+    alert("Para abrir a camera no celular, acesse o sistema em contexto seguro (HTTPS ou localhost).");
+    return;
+  }
 
   // Preferência: BarcodeDetector (Chrome/Android) -> funciona sem libs externas
   var canBD = ("BarcodeDetector" in window);
@@ -687,9 +1036,10 @@ function openScanner() {
   if (canBD) {
     try { detector = new BarcodeDetector({formats:["qr_code"]}); } catch(e) { detector = null; }
   }
+  scanDetector = detector;
 
   function startCamera(){
-    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:640},height:{ideal:640}}})
+    requestCameraWithFallback()
       .then(function(stream) {
         scanStream = stream;
         var vid = document.getElementById("scanVideo");
@@ -698,12 +1048,14 @@ function openScanner() {
         vid.addEventListener("loadedmetadata", function() {
           scanCanvas.width = vid.videoWidth || 640;
           scanCanvas.height = vid.videoHeight || 640;
-          scanLoop(vid, detector);
+              scanLoop(vid, detector);
         }, {once:true});
       })
-      .catch(function() {
+      .catch(function(err) {
+        try{ console.error("Scanner camera error:", err && err.name, err && err.message, err); }catch(_e){}
         closeScanner();
-        alert("Nao foi possivel acessar a camera. Verifique as permissoes do navegador.");
+        alert(getCameraErrorMessage(err) + cameraErrorDetails(err) + " O scanner sera fechado para voce continuar por 'Colar codigo'.");
+        openImport();
       });
   }
 
@@ -711,9 +1063,14 @@ function openScanner() {
     startCamera();
   } else {
     // Fallback: jsQR via CDN (pode funcionar offline se estiver em cache)
-    loadScript("https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js", function() {
-      startCamera();
-    });
+    loadScript(
+      "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js",
+      function(){ startCamera(); },
+      function(){
+        closeScanner();
+        alert("Nao foi possivel carregar o leitor de QR (jsQR). Verifique internet/rede e tente novamente.");
+      }
+    );
   }
 }
 
@@ -728,10 +1085,10 @@ function scanLoop(vid, detector) {
       if (codes && codes[0] && codes[0].rawValue) {
         handleScanValue(codes[0].rawValue);
       } else {
-        requestAnimationFrame(function(){ scanLoop(vid, detector); });
+        scanFrame = requestAnimationFrame(function(){ scanLoop(vid, detector); });
       }
     }).catch(function(){
-      requestAnimationFrame(function(){ scanLoop(vid, detector); });
+      scanFrame = requestAnimationFrame(function(){ scanLoop(vid, detector); });
     });
     return;
   }
@@ -745,7 +1102,7 @@ function scanLoop(vid, detector) {
       return;
     }
   }catch(e){}
-  requestAnimationFrame(function(){ scanLoop(vid, detector); });
+  scanFrame = requestAnimationFrame(function(){ scanLoop(vid, detector); });
 }
 
 function handleScanValue(value){
@@ -776,6 +1133,65 @@ function closeScanner() {
   if (scanFrame) { cancelAnimationFrame(scanFrame); scanFrame=null; }
   if (scanStream) { scanStream.getTracks().forEach(function(t){t.stop();}); scanStream=null; }
   document.getElementById("scanOverlay").classList.remove("open");
+}
+function openScanPhotoPicker(){
+  var inp = document.getElementById("scanPhotoInput");
+  if(!inp) return;
+  inp.value = "";
+  inp.click();
+}
+function decodeQrFromCanvas(canvas){
+  if(scanDetector){
+    return scanDetector.detect(canvas).then(function(codes){
+      if(codes && codes[0] && codes[0].rawValue) return codes[0].rawValue;
+      throw new Error("qr_not_found");
+    });
+  }
+  return new Promise(function(resolve, reject){
+    loadScript(
+      "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js",
+      function() {
+        try{
+          var ctx = canvas.getContext("2d");
+          var img = ctx.getImageData(0,0,canvas.width,canvas.height);
+          var code = jsQR(img.data,img.width,img.height,{inversionAttempts:"dontInvert"});
+          if(code && code.data) resolve(code.data);
+          else reject(new Error("qr_not_found"));
+        }catch(e){ reject(e); }
+      },
+      function(){ reject(new Error("jsqr_load_failed")); }
+    );
+  });
+}
+function onScanPhotoSelected(e){
+  var file = e && e.target && e.target.files ? e.target.files[0] : null;
+  if(!file) return;
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function(){
+    try{
+      var c = document.createElement("canvas");
+      c.width = img.naturalWidth || img.width;
+      c.height = img.naturalHeight || img.height;
+      var ctx = c.getContext("2d");
+      ctx.drawImage(img,0,0,c.width,c.height);
+      decodeQrFromCanvas(c).then(function(value){
+        handleScanValue(value);
+      }).catch(function(){
+        alert("Nao foi possivel identificar o QR nesta imagem. Tente outra foto com mais foco/contraste.");
+      }).finally(function(){
+        URL.revokeObjectURL(url);
+      });
+    }catch(err){
+      URL.revokeObjectURL(url);
+      alert("Falha ao processar a imagem do QR.");
+    }
+  };
+  img.onerror = function(){
+    URL.revokeObjectURL(url);
+    alert("Nao foi possivel abrir a imagem selecionada.");
+  };
+  img.src = url;
 }
 
 // ===================== IMPORT MODAL =====================
@@ -1014,9 +1430,10 @@ function renderReport() {
   }catch(e){}
 })();
 
-function loadScript(src, cb) {
+function loadScript(src, cb, onErr) {
   if (document.querySelector('script[src="'+src+'"]')) { cb(); return; }
   var s = document.createElement("script"); s.src=src; s.onload=cb;
+  s.onerror = function(){ if(typeof onErr==="function") onErr(); };
   document.head.appendChild(s);
 }
 function toast(msg) {
@@ -1042,6 +1459,7 @@ document.getElementById("importModal").addEventListener("click", function(e) {
       state.talp = Array.isArray(saved.state.talp)? saved.state.talp : [];
       state.respostas = Array.isArray(saved.state.respostas)? saved.state.respostas : [];
       state.prac = saved.state.prac || {1:[],2:[],3:[]};
+      state.currentEvalId = saved.state.currentEvalId || null;
       state.done = new Set(saved.state.done || []);
     }
     applyFields(saved.fields);
@@ -1052,8 +1470,7 @@ document.getElementById("importModal").addEventListener("click", function(e) {
   try{ renderRespostas(); }catch(e){}
   try{ renderMatrix(); }catch(e){}
   try{ [1,2,3].forEach(function(u){ renderPrac(u); }); }catch(e){}
-  // sempre inicia na Etapa 1 ao abrir o arquivo
-  try{ goTo(1); }catch(e){}
+  try{ openHome(); }catch(e){}
 })();
 </script>
 </body>
