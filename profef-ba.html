@@ -976,6 +976,24 @@ function cameraErrorDetails(err){
   var msg = err.message ? (" - " + err.message) : "";
   return " ["+code+msg+"]";
 }
+function parseProfefPayload(rawValue){
+  var value = (rawValue || "").trim();
+  var idx = value.toUpperCase().indexOf("PROFEF:");
+  var b64 = idx >= 0 ? value.substring(idx + 7) : value;
+  b64 = b64.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+  while (b64.length % 4 !== 0) b64 += "=";
+  var json = decodeURIComponent(escape(atob(b64)));
+  var data = JSON.parse(json);
+  var talp = Array.isArray(data.t) ? data.t : (Array.isArray(data.talp) ? data.talp : []);
+  if(!talp.length) throw new Error("payload_sem_talp");
+  return {
+    talp: talp,
+    prac: Array.isArray(data.p) ? data.p : (Array.isArray(data.prac) ? data.prac : []),
+    desejo: data.d || data.desejo || "",
+    inv: data.i || data.inv || "",
+    barr: data.b || data.barr || ""
+  };
+}
 function requestCameraWithFallback(){
   function tryAttempts(attempts, lastErr){
     var i = 0;
@@ -1106,24 +1124,12 @@ function scanLoop(vid, detector) {
 }
 
 function handleScanValue(value){
-  value = (value || "").trim();
   var fb = document.getElementById("scanFb");
   fb.style.transform = "scale(1)";
   setTimeout(function(){ fb.style.transform="scale(0)"; }, 700);
-
-  var idx = value.toUpperCase().indexOf("PROFEF:");
-  if (idx < 0) {
-    alert("QR Code invalido. Escaneie o QR gerado pelo formulario ProfEF-BA.");
-    return;
-  }
-  var b64 = value.substring(idx + 7).replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
-  while (b64.length % 4 !== 0) b64 += "=";
   try {
-    var json = decodeURIComponent(escape(atob(b64)));
-    var data = JSON.parse(json);
-    var talp = Array.isArray(data.t) ? data.t : (Array.isArray(data.talp) ? data.talp : []);
-    if (!data || !talp.length) throw new Error("payload_sem_talp");
-    state.respostas.push({talp:talp, desejo:data.d||data.desejo||"", inv:data.i||data.inv||"", barr:data.b||data.barr||""});
+    var parsed = parseProfefPayload(value);
+    state.respostas.push(parsed);
     updateRespostasUI();
     renderTalpAnalysis();
     closeScanner();
@@ -1131,7 +1137,7 @@ function handleScanValue(value){
     toast("Resposta importada com sucesso!");
   } catch(e) {
     try{ console.error("Erro ao decodificar QR:", e, "raw:", value); }catch(_e){}
-    alert("Nao foi possivel ler a resposta. Verifique o QR/tamanho da tela e tente novamente.");
+    alert("Nao foi possivel ler a resposta. Verifique o QR/tamanho da tela ou use Colar codigo.");
   }
 }
 
@@ -1212,13 +1218,12 @@ function doImport() {
   var raw = document.getElementById("importCode").value.trim();
   var err = document.getElementById("importErr");
   try {
-    var parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
-    var json = {talp:parsed.t||parsed.talp||[], prac:parsed.p||[], desejo:parsed.d||"", inv:parsed.i||"", barr:parsed.b||""};
-    if (!json.talp.length) throw new Error();
-    state.respostas.push(json);
+    var parsed = parseProfefPayload(raw);
+    state.respostas.push(parsed);
     closeImport();
     updateRespostasUI();
     renderTalpAnalysis();
+    saveAll();
   } catch(e) { err.style.display="block"; }
 }
 
