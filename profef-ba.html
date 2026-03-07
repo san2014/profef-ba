@@ -1106,6 +1106,7 @@ function scanLoop(vid, detector) {
 }
 
 function handleScanValue(value){
+  value = (value || "").trim();
   var fb = document.getElementById("scanFb");
   fb.style.transform = "scale(1)";
   setTimeout(function(){ fb.style.transform="scale(0)"; }, 700);
@@ -1119,8 +1120,9 @@ function handleScanValue(value){
     var json = decodeURIComponent(escape(atob(b64)));
     var data = JSON.parse(json);
     if (!data || !data.t || !data.t.length) throw 0;
-    state.respostas.push({talp:data.t, desej:data.d||"", inv:data.i||"", bar:data.b||""});
-    renderRespostas();
+    state.respostas.push({talp:data.t, desejo:data.d||"", inv:data.i||"", barr:data.b||""});
+    updateRespostasUI();
+    renderTalpAnalysis();
     closeScanner();
     saveAll();
     toast("Resposta importada com sucesso!");
@@ -1467,7 +1469,7 @@ document.getElementById("importModal").addEventListener("click", function(e) {
   updateNav();
   // re-render de módulos dependentes de estado
   try{ renderTalp(); }catch(e){}
-  try{ renderRespostas(); }catch(e){}
+  try{ updateRespostasUI(); }catch(e){}
   try{ renderMatrix(); }catch(e){}
   try{ [1,2,3].forEach(function(u){ renderPrac(u); }); }catch(e){}
   try{ openHome(); }catch(e){}
