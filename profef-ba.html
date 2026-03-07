@@ -1111,23 +1111,27 @@ function handleScanValue(value){
   fb.style.transform = "scale(1)";
   setTimeout(function(){ fb.style.transform="scale(0)"; }, 700);
 
-  if (value.indexOf("PROFEF:") !== 0) {
+  var idx = value.toUpperCase().indexOf("PROFEF:");
+  if (idx < 0) {
     alert("QR Code invalido. Escaneie o QR gerado pelo formulario ProfEF-BA.");
     return;
   }
-  var b64 = value.substring(7);
+  var b64 = value.substring(idx + 7).replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+  while (b64.length % 4 !== 0) b64 += "=";
   try {
     var json = decodeURIComponent(escape(atob(b64)));
     var data = JSON.parse(json);
-    if (!data || !data.t || !data.t.length) throw 0;
-    state.respostas.push({talp:data.t, desejo:data.d||"", inv:data.i||"", barr:data.b||""});
+    var talp = Array.isArray(data.t) ? data.t : (Array.isArray(data.talp) ? data.talp : []);
+    if (!data || !talp.length) throw new Error("payload_sem_talp");
+    state.respostas.push({talp:talp, desejo:data.d||data.desejo||"", inv:data.i||data.inv||"", barr:data.b||data.barr||""});
     updateRespostasUI();
     renderTalpAnalysis();
     closeScanner();
     saveAll();
     toast("Resposta importada com sucesso!");
   } catch(e) {
-    alert("Nao foi possivel ler a resposta. Tente novamente. " + e);
+    try{ console.error("Erro ao decodificar QR:", e, "raw:", value); }catch(_e){}
+    alert("Nao foi possivel ler a resposta. Verifique o QR/tamanho da tela e tente novamente.");
   }
 }
 
