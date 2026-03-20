@@ -52,6 +52,16 @@ create table if not exists public.talp_responses (
   constraint talp_responses_evoked_words_size check (coalesce(array_length(evoked_words, 1), 0) = 5)
 );
 
+create table if not exists public.teacher_evaluations (
+  id uuid primary key default gen_random_uuid(),
+  teacher_id uuid not null references public.teachers (id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft', 'completed')),
+  title text,
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create index if not exists idx_schools_created_by on public.schools (created_by);
 create index if not exists idx_teachers_auth_user_id on public.teachers (auth_user_id);
 create index if not exists idx_classes_teacher_id on public.classes (teacher_id);
@@ -59,6 +69,7 @@ create index if not exists idx_talp_sessions_teacher_id on public.talp_sessions 
 create index if not exists idx_talp_sessions_class_id on public.talp_sessions (class_id);
 create index if not exists idx_talp_sessions_qr_token on public.talp_sessions (qr_token);
 create index if not exists idx_talp_responses_session_id on public.talp_responses (session_id);
+create index if not exists idx_teacher_evaluations_teacher_id on public.teacher_evaluations (teacher_id);
 
 create or replace function public.get_my_teacher_id()
 returns uuid
@@ -157,6 +168,7 @@ alter table public.teachers enable row level security;
 alter table public.classes enable row level security;
 alter table public.talp_sessions enable row level security;
 alter table public.talp_responses enable row level security;
+alter table public.teacher_evaluations enable row level security;
 
 drop policy if exists "teachers_select_own" on public.teachers;
 create policy "teachers_select_own"
@@ -322,6 +334,70 @@ using (
     from public.talp_sessions ts
     join public.teachers t on t.id = ts.teacher_id
     where ts.id = talp_responses.session_id
+      and t.auth_user_id = auth.uid()
+  )
+);
+
+drop policy if exists "teacher_evaluations_select_teacher" on public.teacher_evaluations;
+create policy "teacher_evaluations_select_teacher"
+on public.teacher_evaluations
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.teachers t
+    where t.id = teacher_evaluations.teacher_id
+      and t.auth_user_id = auth.uid()
+  )
+);
+
+drop policy if exists "teacher_evaluations_insert_teacher" on public.teacher_evaluations;
+create policy "teacher_evaluations_insert_teacher"
+on public.teacher_evaluations
+for insert
+to authenticated
+with check (
+  exists (
+    select 1
+    from public.teachers t
+    where t.id = teacher_evaluations.teacher_id
+      and t.auth_user_id = auth.uid()
+  )
+);
+
+drop policy if exists "teacher_evaluations_update_teacher" on public.teacher_evaluations;
+create policy "teacher_evaluations_update_teacher"
+on public.teacher_evaluations
+for update
+to authenticated
+using (
+  exists (
+    select 1
+    from public.teachers t
+    where t.id = teacher_evaluations.teacher_id
+      and t.auth_user_id = auth.uid()
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.teachers t
+    where t.id = teacher_evaluations.teacher_id
+      and t.auth_user_id = auth.uid()
+  )
+);
+
+drop policy if exists "teacher_evaluations_delete_teacher" on public.teacher_evaluations;
+create policy "teacher_evaluations_delete_teacher"
+on public.teacher_evaluations
+for delete
+to authenticated
+using (
+  exists (
+    select 1
+    from public.teachers t
+    where t.id = teacher_evaluations.teacher_id
       and t.auth_user_id = auth.uid()
   )
 );

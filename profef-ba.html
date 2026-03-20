@@ -576,7 +576,12 @@ var state = {
     session: null,
     teacher: null,
     activeSession: null,
-    poller: null
+    evaluations: [],
+    poller: null,
+    saveTimer: null,
+    saveInFlight: false,
+    lastSavedFingerprint: "",
+    hasLocalSnapshot: false
   }
 };
 
@@ -675,6 +680,9 @@ function safeText(v){ return (v || "").replace(/[&<>"]/g, function(c){ return {"
 function formatDateTime(iso){
   if(!iso) return "-";
   try{ return new Date(iso).toLocaleString("pt-BR", {dateStyle:"short", timeStyle:"short"}); }catch(e){ return iso; }
+}
+function isUuid(value){
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || "");
 }
 function classify(name) {
   var n = name.toLowerCase().replace(/[^a-z]/g,"");
@@ -780,20 +788,24 @@ async function initializeAuth(){
 async function handleAuthSession(session){
   state.supabase.session = session || null;
   state.supabase.teacher = null;
+  state.supabase.evaluations = [];
   if(session){
     try{
       await ensureTeacherProfile();
+      await loadTeacherEvaluations(true);
       await loadActiveTalpSession();
     }catch(err){
       setAuthError(err.message || "Falha ao carregar o professor.");
     }
   }else{
+    state.currentEvalId = null;
     state.currentTalpSessionId = null;
     state.supabase.activeSession = null;
     stopTalpPolling();
     renderSessionPanel();
   }
   updateAuthUI();
+  renderHome();
 }
 async function signInTeacher(){
   if(!state.supabase.client){
@@ -1280,6 +1292,133 @@ function buildAvaliacaoPayload(existingId){
     }
   };
 }
+function buildEvaluationSnapshot(status){
+  var exported = buildAvaliacaoPayload(state.currentEvalId);
+  return {
+    snapshotVersion: 1,
+    exportedEvaluation: exported,
+    uiState: {
+      step: state.step,
+      done: Array.from(state.done || []),
+      talp: state.talp,
+      respostas: state.respostas,
+      prac: state.prac,
+      currentTalpSessionId: state.currentTalpSessionId
+    },
+    fields: collectFields(),
+    metadata: {
+      status: status || "draft",
+      savedAt: new Date().toISOString()
+    }
+  };
+}
+function getEvaluationContent(record){
+  if(record && record.payload && record.payload.exportedEvaluation) return record.payload.exportedEvaluation;
+  return record || null;
+}
+function getEvaluationFingerprint(snapshot){
+  try{
+    return JSON.stringify(snapshot);
+  }catch(e){
+    return Date.now().toString();
+  }
+}
+function applyEvaluationRecord(record){
+  if(!record) return;
+  var snapshot = record.payload || null;
+  if(snapshot && snapshot.fields){
+    resetPlanState();
+    clearFormFields();
+    applyFields(snapshot.fields);
+    var ui = snapshot.uiState || {};
+    state.step = ui.step || 1;
+    state.done = new Set(ui.done || []);
+    state.talp = Array.isArray(ui.talp) ? ui.talp : [];
+    state.respostas = Array.isArray(ui.respostas) ? ui.respostas : [];
+    state.prac = ui.prac || {1:[],2:[],3:[]};
+    state.currentTalpSessionId = ui.currentTalpSessionId || null;
+    state.currentEvalId = record.id || null;
+  }else{
+    aplicarAvaliacaoNoPlano(getEvaluationContent(record));
+    state.currentEvalId = record.id || null;
+  }
+  state.supabase.lastSavedFingerprint = getEvaluationFingerprint(snapshot || getEvaluationContent(record) || {});
+  updateNav();
+  renderTalp();
+  updateRespostasUI();
+  renderTalpAnalysis();
+  [1,2,3].forEach(function(u){ renderPrac(u); });
+  renderMatrix();
+  renderSessionPanel();
+  saveAll();
+}
+async function saveEvaluationToSupabase(status, opts){
+  opts = opts || {};
+  if(!state.supabase.client || !state.supabase.teacher || state.supabase.saveInFlight) return null;
+  var snapshot = buildEvaluationSnapshot(status || "draft");
+  var fingerprint = getEvaluationFingerprint(snapshot);
+  if(opts.skipIfUnchanged && fingerprint === state.supabase.lastSavedFingerprint) return null;
+  state.supabase.saveInFlight = true;
+  try{
+    var payload = {
+      teacher_id: state.supabase.teacher.id,
+      status: status || "draft",
+      title: (gv("serie") || "Planejamento") + " | Turma " + (gv("turma") || "-"),
+      payload: snapshot,
+      updated_at: new Date().toISOString()
+    };
+    var resp;
+    if(isUuid(state.currentEvalId)){
+      resp = await state.supabase.client.from("teacher_evaluations").update(payload).eq("id", state.currentEvalId).select("*").single();
+    }else{
+      resp = await state.supabase.client.from("teacher_evaluations").insert(payload).select("*").single();
+    }
+    if(resp.error) throw resp.error;
+    state.currentEvalId = resp.data.id;
+    state.supabase.lastSavedFingerprint = fingerprint;
+    await loadTeacherEvaluations(false);
+    return resp.data;
+  }finally{
+    state.supabase.saveInFlight = false;
+  }
+}
+async function scheduleRemoteDraftSave(){
+  if(!state.supabase.client || !state.supabase.teacher) return;
+  if(state.supabase.saveTimer) clearTimeout(state.supabase.saveTimer);
+  state.supabase.saveTimer = setTimeout(function(){
+    saveEvaluationToSupabase("draft", { skipIfUnchanged: true }).catch(function(err){
+      console.error("Falha ao salvar rascunho remoto:", err);
+    });
+  }, 1200);
+}
+async function loadTeacherEvaluations(restoreDraft){
+  if(!state.supabase.client || !state.supabase.teacher) return [];
+  var resp = await state.supabase.client
+    .from("teacher_evaluations")
+    .select("*")
+    .eq("teacher_id", state.supabase.teacher.id)
+    .order("updated_at", { ascending: false });
+  if(resp.error) throw resp.error;
+  state.supabase.evaluations = resp.data || [];
+  renderHome();
+  if(restoreDraft){
+    var target = null;
+    if(isUuid(state.currentEvalId)){
+      target = state.supabase.evaluations.find(function(item){ return item.id === state.currentEvalId; }) || null;
+    }
+    if(!target && !state.supabase.hasLocalSnapshot){
+      target = state.supabase.evaluations.find(function(item){ return item.status === "draft"; }) || state.supabase.evaluations[0] || null;
+    }
+    if(target) applyEvaluationRecord(target);
+  }
+  return state.supabase.evaluations;
+}
+async function deleteEvaluationRemote(evalId){
+  if(!state.supabase.client || !evalId) return;
+  var resp = await state.supabase.client.from("teacher_evaluations").delete().eq("id", evalId);
+  if(resp.error) throw resp.error;
+  await loadTeacherEvaluations(false);
+}
 function upsertAvaliacaoHistorico(payload){
   var hist = loadAvaliacoesHistorico();
   var idx = hist.findIndex(function(item){ return (item.id||"") === payload.id; });
@@ -1306,12 +1445,19 @@ function saveAvaliacaoTurma(){
   try{
     var payload = buildAvaliacaoPayload(state.currentEvalId);
     upsertAvaliacaoHistorico(payload);
-    state.currentEvalId = payload.id;
     return payload;
   }catch(e){ return null; }
 }
-function salvarAvaliacao(){
+async function salvarAvaliacao(){
   saveAvaliacaoTurma();
+  if(state.supabase.client && state.supabase.teacher){
+    try{
+      await saveEvaluationToSupabase("completed", { skipIfUnchanged: false });
+    }catch(err){
+      alert(err.message || "Nao foi possivel salvar a avaliacao no Supabase.");
+      return;
+    }
+  }
   resetAll();
   openHome();
   toast("Avaliacao salva com sucesso.");
@@ -1322,17 +1468,22 @@ function exportPdf(){
 }
 function renderHome(){
   var root = document.getElementById("homeEvalList");
-  var list = loadAvaliacoesHistorico();
+  var list = (state.supabase.evaluations && state.supabase.evaluations.length)
+    ? state.supabase.evaluations
+    : loadAvaliacoesHistorico();
   if(!list.length){
     root.innerHTML = '<div class="eval-empty">Nenhuma avaliacao exportada ainda. Clique em <strong>Novo Planejamento</strong> para iniciar.</div>';
     return;
   }
   root.innerHTML = list.map(function(ev, idx){
-    var idt = ev.identificacaoTurma || {};
-    var mat = ev.matrizCurricular || {};
-    var at = ev.avaliacaoTurma || {};
+    var content = getEvaluationContent(ev) || ev;
+    var idt = content.identificacaoTurma || {};
+    var mat = content.matrizCurricular || {};
+    var at = content.avaliacaoTurma || {};
     var turmaLabel = (idt.serie||"-") + " | Turma " + (idt.turma||"-");
-    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(ev.generatedAt)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Praticas planejadas:</strong> '+(mat.totalPraticas||0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+(ev.id||"")+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+(ev.id||"")+'\','+idx+')">Excluir</button></div></article>';
+    var recordId = ev.id || content.id || "";
+    var recordDate = ev.updated_at || content.generatedAt;
+    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(recordDate)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Praticas planejadas:</strong> '+(mat.totalPraticas||0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+recordId+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+recordId+'\','+idx+')">Excluir</button></div></article>';
   }).join("");
 }
 function openHome(){
@@ -1366,6 +1517,7 @@ function newPlanejamento(){
   resetPlanState();
   clearFormFields();
   resetAll();
+  state.supabase.lastSavedFingerprint = "";
   updateNav();
   renderTalp();
   updateRespostasUI();
@@ -1420,27 +1572,40 @@ function aplicarAvaliacaoNoPlano(ev){
   renderSessionPanel();
   saveAll();
 }
-function abrirAvaliacaoEdicao(evalId, index){
-  var list = loadAvaliacoesHistorico();
+async function abrirAvaliacaoEdicao(evalId, index){
+  var list = (state.supabase.evaluations && state.supabase.evaluations.length)
+    ? state.supabase.evaluations
+    : loadAvaliacoesHistorico();
   var ev = list.find(function(item){ return (item.id||"")===evalId; });
   if(!ev && typeof index==="number" && list[index]) ev = list[index];
   if(!ev && list.length) ev = list[0];
   if(!ev){ alert("Nao foi possivel abrir a avaliacao selecionada."); return; }
-  aplicarAvaliacaoNoPlano(ev);
-  state.currentEvalId = ev.id || null;
+  if(ev.payload) applyEvaluationRecord(ev);
+  else aplicarAvaliacaoNoPlano(ev);
+  state.currentEvalId = isUuid(ev.id) ? ev.id : null;
   startFlow(1);
   if(state.supabase.client && state.currentTalpSessionId) loadActiveTalpSession();
 }
-function excluirAvaliacao(evalId, index){
-  var list = loadAvaliacoesHistorico();
+async function excluirAvaliacao(evalId, index){
+  var list = (state.supabase.evaluations && state.supabase.evaluations.length)
+    ? state.supabase.evaluations
+    : loadAvaliacoesHistorico();
   var idx = list.findIndex(function(item){ return (item.id||"")===evalId; });
   if(idx<0 && typeof index==="number" && list[index]) idx = index;
   if(idx<0) return;
   if(!confirm("Deseja excluir esta avaliacao salva?")) return;
-  var removed = list.splice(idx,1)[0];
-  localStorage.setItem(LS_EVAL_HISTORY_KEY, JSON.stringify(list));
-  if(list.length) localStorage.setItem(LS_EVAL_KEY, JSON.stringify(list[0]));
-  else localStorage.removeItem(LS_EVAL_KEY);
+  var removed = list[idx];
+  if(state.supabase.client && state.supabase.teacher){
+    deleteEvaluationRemote(removed.id).catch(function(err){
+      alert(err.message || "Nao foi possivel excluir a avaliacao no Supabase.");
+    });
+  }
+  if(!state.supabase.evaluations || !state.supabase.evaluations.length){
+    list.splice(idx,1);
+    localStorage.setItem(LS_EVAL_HISTORY_KEY, JSON.stringify(list));
+    if(list.length) localStorage.setItem(LS_EVAL_KEY, JSON.stringify(list[0]));
+    else localStorage.removeItem(LS_EVAL_KEY);
+  }
   if(removed && removed.id && state.currentEvalId===removed.id) state.currentEvalId = null;
   renderHome();
 }
@@ -1517,10 +1682,14 @@ function toast(msg) {
   setTimeout(function(){ t.remove(); }, 3000);
 }
 window.addEventListener("beforeunload", saveAll);
-setInterval(saveAll, 1500);
+setInterval(function(){
+  saveAll();
+  scheduleRemoteDraftSave();
+}, 1500);
 document.addEventListener("input", function(e){
   if(e && e.target && (e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA" || e.target.tagName==="SELECT")) {
     saveAll();
+    scheduleRemoteDraftSave();
     if(["serie","turma","escola","municipio","anoLetivo"].indexOf(e.target.id) >= 0) updateClassLabel();
   }
 });
@@ -1533,13 +1702,14 @@ document.addEventListener("keydown", function(e){
 
 (function init(){
   var saved = loadAll();
+  state.supabase.hasLocalSnapshot = !!saved;
   if(saved){
     if(saved.state){
       state.step = saved.state.step || 1;
       state.talp = Array.isArray(saved.state.talp)? saved.state.talp : [];
       state.respostas = Array.isArray(saved.state.respostas)? saved.state.respostas : [];
       state.prac = saved.state.prac || {1:[],2:[],3:[]};
-      state.currentEvalId = saved.state.currentEvalId || null;
+      state.currentEvalId = isUuid(saved.state.currentEvalId) ? saved.state.currentEvalId : null;
       state.currentTalpSessionId = saved.state.currentTalpSessionId || null;
       state.done = new Set(saved.state.done || []);
     }

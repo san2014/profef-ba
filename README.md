@@ -7,7 +7,7 @@ Evolucao incremental do prototipo atual do ProfEF-BA para um fluxo TALP com sess
 - Layout principal do professor em [`profef-ba.html`](/home/alesandro/Documentos/Dev/profef-ba/profef-ba.html)
 - Estrutura em 5 etapas do planejamento
 - Analise local das palavras, matriz curricular e relatorio final
-- Persistencia local do restante do planejamento via `localStorage`
+- Layout e fluxo principal do professor, sem reescrita completa
 
 ## O que mudou
 
@@ -16,6 +16,7 @@ Evolucao incremental do prototipo atual do ProfEF-BA para um fluxo TALP com sess
 - A etapa 2 do professor passa a criar/abrir/encerrar sessoes TALP e ler respostas do banco
 - O formulario do aluno em [`talp-aluno.html`](/home/alesandro/Documentos/Dev/profef-ba/talp-aluno.html) virou uma pagina minimalista por `token`
 - O painel do professor voltou a usar login do Supabase para validar o prototipo com um fluxo mais seguro
+- O conteudo completo da avaliacao do professor agora tambem e persistido no Supabase
 
 ## Setup
 
@@ -55,10 +56,12 @@ python3 -m http.server 8080
 - `classes`: turma vinculada ao professor e escola
 - `talp_sessions`: sessao TALP com `draft/open/closed` e `qr_token`
 - `talp_responses`: respostas anonimas enviadas pelos alunos
+- `teacher_evaluations`: snapshot completo da avaliacao do professor em `jsonb`
 
 ## RLS resumido
 
 - Professor autenticado acessa apenas o proprio `teacher`, `classes`, `talp_sessions` e `talp_responses`
+- Professor autenticado acessa apenas as proprias `teacher_evaluations`
 - Aluno anonimo nao faz `select` em respostas
 - Aluno anonimo envia resposta apenas pela RPC `submit_talp_response`
 - A RPC valida token e `status = 'open'`
@@ -66,6 +69,6 @@ python3 -m http.server 8080
 ## Observacoes
 
 - A modelagem cobre a persistencia do novo fluxo TALP, que era o foco principal desta adaptacao.
-- O restante do planejamento anual continua local, para evitar reescrita do frontend do professor nesta iteracao.
+- O frontend ainda usa `localStorage` como cache local, mas o conteudo completo da avaliacao passa a ser salvo no Supabase.
 - A autenticacao do professor foi mantida simples, com uma conta do Supabase Auth para validar o prototipo sem expor administracao de sessao publicamente.
 - Se quiser evoluir a proxima fase, o caminho natural e persistir tambem as etapas 1, 3, 4 e 5 no Supabase sem alterar o layout atual.
