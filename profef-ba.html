@@ -284,7 +284,6 @@ body.home-mode .home{display:block}
       <p>Consulte as avaliacoes ja exportadas em PDF e acesse o fluxo de etapas para criar um novo planejamento. O TALP da turma agora pode ser coletado por sessao com Supabase sem mudar o layout principal.</p>
     </div>
     <div class="home-actions">
-      <button class="btn btn-s" id="resumePlanningBtn" onclick="resumePlanejamento()" style="display:none;">Continuar Planejamento</button>
       <button class="btn btn-p" onclick="newPlanejamento()">+ Novo Planejamento</button>
     </div>
   </div>
@@ -677,19 +676,6 @@ function loadAll(){
 }
 function resetAll(){
   localStorage.removeItem(LS_KEY);
-}
-function hasPlanningInProgress(){
-  if(state.currentEvalId || state.currentTalpSessionId) return true;
-  if((state.talp && state.talp.length) || (state.respostas && state.respostas.length)) return true;
-  if(state.prac && (state.prac[1].length || state.prac[2].length || state.prac[3].length)) return true;
-  return Object.keys(collectFields()).some(function(id){
-    return trimValue(gv(id)) !== "";
-  });
-}
-function updateHomeActions(){
-  var resumeBtn = document.getElementById("resumePlanningBtn");
-  if(!resumeBtn) return;
-  resumeBtn.style.display = hasPlanningInProgress() ? "inline-flex" : "none";
 }
 function updateDraftSaveButton(){
   var btn = document.getElementById("draftSaveBtn");
@@ -1527,7 +1513,6 @@ function exportPdf(){
 }
 function renderHome(){
   var root = document.getElementById("homeEvalList");
-  updateHomeActions();
   updateDraftSaveButton();
   var list = (state.supabase.evaluations && state.supabase.evaluations.length)
     ? state.supabase.evaluations
@@ -1551,9 +1536,6 @@ function openHome(){
   document.body.classList.add("home-mode");
   updateDraftSaveButton();
   renderHome();
-}
-function resumePlanejamento(){
-  startFlow(state.step || 1);
 }
 function resetPlanState(){
   state.step = 1;
