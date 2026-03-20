@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ProfEF-BA · Questionário</title>
+<title>ProfEF-BA · Formulário do Aluno</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="./supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --navy: #0d2137;
@@ -23,28 +25,33 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'IBM Plex Sans', sans-serif;
-  background: var(--cream);
+  background: linear-gradient(180deg, #f8f5ef 0%, #f1ece3 100%);
   color: var(--text);
   min-height: 100vh;
   padding-bottom: 60px;
 }
-
 .top-bar {
   background: var(--navy);
   color: white;
   padding: 16px 20px;
-  display: flex; align-items: center; gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .top-icon {
-  width: 38px; height: 38px; background: var(--teal);
-  border-radius: 10px; display: flex; align-items: center;
-  justify-content: center; font-size: 20px; flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  background: var(--teal);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
 }
 .top-title { font-family: 'Source Serif 4', serif; font-size: 18px; font-weight: 700; }
 .top-sub { font-size: 11px; opacity: 0.6; margin-top: 1px; }
-
 .wrap { max-width: 560px; margin: 0 auto; padding: 24px 16px; }
-
 .card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -53,127 +60,159 @@ body {
   margin-bottom: 16px;
   box-shadow: 0 2px 10px rgba(13,33,55,0.07);
 }
-
 .card-title {
   font-family: 'Source Serif 4', serif;
-  font-size: 18px; font-weight: 700;
-  color: var(--navy); margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
 }
-.card-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 16px; }
-
-label { font-size: 12px; font-weight: 600; color: var(--text-mid);
-  letter-spacing: 0.04em; text-transform: uppercase; display: block; margin-bottom: 6px; }
-
-input[type=text], input[type=number], textarea, select {
-  width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 11px 14px; font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 15px; color: var(--text); background: white;
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
+.card-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 16px;
 }
-input:focus, textarea:focus, select:focus {
-  border-color: var(--teal); box-shadow: 0 0 0 3px rgba(27,122,110,0.12);
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
 }
-textarea { resize: vertical; min-height: 80px; }
-
+input[type=text], textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(27,122,110,0.12);
+}
+textarea { resize: vertical; min-height: 88px; }
 .field { margin-bottom: 16px; }
 .field:last-child { margin-bottom: 0; }
-
-/* TALP word chips */
 .talp-indutor {
   background: linear-gradient(135deg, var(--navy), #1a3a5c);
-  color: white; border-radius: 10px; padding: 20px;
-  text-align: center; margin-bottom: 16px;
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
 }
 .talp-indutor .indutor-label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
 .talp-indutor .indutor-word {
   font-family: 'Source Serif 4', serif;
-  font-size: 24px; font-weight: 700; color: var(--gold);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
   font-style: italic;
 }
-
+.session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.session-badge.ok { background: #e7faf6; color: #0e6d62; }
+.session-badge.warn { background: #fef8e7; color: #b87d1a; }
+.session-badge.err { background: #fdecea; color: #c0392b; }
 .word-add-row { display: flex; gap: 8px; margin-bottom: 12px; }
 .word-add-row input { flex: 1; font-size: 15px; }
 .btn-add {
-  background: var(--teal); color: white; border: none;
-  border-radius: 8px; padding: 0 18px; font-size: 20px;
-  cursor: pointer; font-weight: 700; flex-shrink: 0;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0 18px;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: 700;
+  flex-shrink: 0;
   transition: background 0.15s;
 }
 .btn-add:hover { background: var(--teal-light); }
-
 .chips {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  min-height: 48px; background: var(--cream);
-  border: 1.5px dashed var(--border); border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 56px;
+  background: var(--cream);
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
   padding: 10px;
 }
 .chip {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--navy); color: white;
-  font-size: 13px; font-weight: 500;
-  padding: 5px 12px; border-radius: 20px;
-  cursor: pointer; user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--navy);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
   transition: background 0.15s;
 }
 .chip:hover { background: #c0392b; }
 .chip .num { font-size: 10px; opacity: 0.6; }
 .chips-empty { color: var(--text-light); font-size: 13px; padding: 4px; width: 100%; text-align: center; }
-
 .hint { font-size: 11px; color: var(--text-light); margin-top: 6px; }
-
-/* Praticas check grid */
-.pratics-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-top: 4px;
+.counter {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-mid);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
 }
-.pratic-check {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--cream); border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 10px 12px;
-  cursor: pointer; transition: all 0.15s; font-size: 13px;
-  user-select: none;
-}
-.pratic-check.checked {
-  background: #eaf5f3; border-color: var(--teal); color: var(--teal); font-weight: 600;
-}
-.pratic-check input { display: none; }
-.pratic-check .mark { font-size: 16px; }
-
-/* submit */
 .btn-submit {
-  width: 100%; background: var(--teal); color: white;
-  border: none; border-radius: 10px; padding: 16px;
+  width: 100%;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 16px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
   margin-top: 8px;
   box-shadow: 0 4px 14px rgba(27,122,110,0.25);
 }
 .btn-submit:hover { background: var(--teal-light); transform: translateY(-1px); }
-.btn-submit:active { transform: translateY(0); }
-
-/* Success screen */
-#successScreen {
-  display: none; text-align: center; padding: 48px 24px;
+.btn-submit:disabled { cursor: not-allowed; opacity: 0.6; transform: none; }
+.status-card {
+  text-align: center;
+  padding: 32px 24px;
 }
-#successScreen .big-icon { font-size: 64px; margin-bottom: 16px; }
-#successScreen h2 {
+.status-card h2 {
   font-family: 'Source Serif 4', serif;
-  font-size: 26px; font-weight: 700; color: var(--navy); margin-bottom: 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
 }
-#successScreen p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
-
-/* progress dots */
-.progress-dots {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
-}
-.dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--border); transition: background 0.3s;
-}
-.dot.active { background: var(--teal); }
-.dot.done { background: var(--navy); }
+.status-card p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+.error-msg { font-size: 12px; color: #c0392b; min-height: 18px; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -182,195 +221,173 @@ textarea { resize: vertical; min-height: 80px; }
   <div class="top-icon">🏃</div>
   <div>
     <div class="top-title">ProfEF-BA</div>
-    <div class="top-sub">Questionário de Diagnóstico</div>
+    <div class="top-sub">Formulario TALP do estudante</div>
   </div>
 </div>
 
 <div class="wrap">
-  <div id="formArea">
-    <div class="progress-dots" id="dots">
-      <div class="dot active"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
+  <div class="card" id="sessionStateCard">
+    <div class="session-badge warn" id="sessionBadge">Validando sessao</div>
+    <div class="card-title" id="sessionTitle">Carregando sessao TALP...</div>
+    <div class="card-desc" id="sessionDesc">Aguarde enquanto validamos o link enviado pelo professor.</div>
+  </div>
 
-    <!-- SEÇÃO 1: TALP -->
-    <div class="card" id="sec1">
+  <div id="formArea" style="display:none;">
+    <div class="card">
       <div class="talp-indutor">
         <div class="indutor-label">Termo indutor</div>
-        <div class="indutor-word">"Educação Física no Ensino Médio"</div>
+        <div class="indutor-word" id="inducerWord">"Educacao Fisica no Ensino Medio"</div>
       </div>
-      <div class="card-title">Associação Livre de Palavras</div>
-      <div class="card-desc">Escreva as primeiras palavras que vêm à sua cabeça quando você pensa no termo acima. Não existe resposta certa ou errada!</div>
-
+      <div class="card-title">Associacao Livre de Palavras</div>
+      <div class="card-desc">Escreva exatamente 5 palavras. Elas devem ser as primeiras que vem a sua mente quando voce pensa no termo acima.</div>
       <div class="word-add-row">
-        <input type="text" id="wordInput" placeholder="Digite uma palavra..." maxlength="40"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();addWord();}" />
+        <input type="text" id="wordInput" placeholder="Digite uma palavra..." maxlength="40" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord();}">
         <button class="btn-add" onclick="addWord()">+</button>
       </div>
       <div class="chips" id="chipsBox">
-        <span class="chips-empty">Suas palavras aparecerão aqui...</span>
+        <span class="chips-empty">Suas 5 palavras aparecerao aqui...</span>
       </div>
-      <p class="hint">Toque em uma palavra para removê-la.</p>
+      <div class="counter">
+        <span>Toque em uma palavra para remover.</span>
+        <strong id="wordCounter">0/5</strong>
+      </div>
+      <p class="hint">O envio so sera liberado quando voce completar as 5 palavras.</p>
     </div>
 
-    <!-- SEÇÃO 2: Repertório -->
-    <div class="card" id="sec2">
-      <div class="card-title">🏅 Suas Experiências</div>
-      <div class="card-desc">Marque as práticas corporais que você JÁ praticou ou conhece bem:</div>
-      <div class="pratics-grid" id="praticasGrid"></div>
-    </div>
-
-    <!-- SEÇÃO 3: Perfil e desejo -->
-    <div class="card" id="sec3">
-      <div class="card-title">✨ Sobre Você</div>
+    <div class="card">
+      <div class="card-title">Complementos opcionais</div>
+      <div class="card-desc">Se quiser, conte um pouco mais sobre sua experiencia nas aulas.</div>
       <div class="field">
-        <label>Qual prática você mais gostaria de aprender ou aprofundar?</label>
-        <input type="text" id="desejo" placeholder="Ex.: Skate, capoeira, dança..." maxlength="80" />
+        <label>Gostaria de aprender</label>
+        <input type="text" id="desejo" placeholder="Ex.: Skate, capoeira, danca..." maxlength="140">
       </div>
       <div class="field">
-        <label>Tem alguma prática que você considera importante mas que raramente aparece nas aulas?</label>
-        <textarea id="invisivel" placeholder="Ex.: Jogos indígenas, parkour, danças folclóricas..." maxlength="200"></textarea>
+        <label>Raramente aparece nas aulas</label>
+        <textarea id="invisivel" placeholder="Ex.: Jogos indigenas, parkour, dancas folcloricas..." maxlength="240"></textarea>
       </div>
       <div class="field">
-        <label>Algo que te impede de participar das aulas de Educação Física?</label>
-        <textarea id="barreira" placeholder="Ex.: Falta de espaço, não me sinto incluído(a), questões de saúde..." maxlength="200"></textarea>
+        <label>Barreiras para participar</label>
+        <textarea id="barreira" placeholder="Ex.: Falta de espaco, nao me sinto incluido(a), questoes de saude..." maxlength="240"></textarea>
       </div>
     </div>
 
-    <button class="btn-submit" onclick="submitForm()">✓ Enviar Respostas</button>
+    <button class="btn-submit" id="submitBtn" onclick="submitForm()">Enviar respostas</button>
+    <div class="error-msg" id="errorBox"></div>
   </div>
 
-  <!-- SUCCESS -->
-  <div id="successScreen">
-    <div class="big-icon">✅</div>
-    <h2>Respostas enviadas!</h2>
-    <p>Obrigado pela participação.<br>O professor já recebeu seus dados.<br><br>Você pode fechar esta página.</p>
+  <div class="card status-card" id="successScreen" style="display:none;">
+    <div style="font-size:64px;margin-bottom:16px;">✅</div>
+    <h2>Respostas enviadas</h2>
+    <p>Obrigado pela participacao.<br>O professor ja pode visualizar sua resposta no painel.</p>
   </div>
 </div>
 
 <script>
-const PRATICAS = [
-  "Futebol","Futsal","Vôlei","Basquete","Handebol",
-  "Natação","Atletismo","Capoeira","Dança","Ginástica",
-  "Lutas / Artes Marciais","Skate","Jogos populares",
-  "Corrida","Ping-pong","Badminton","Surf","Ciclismo",
-  "Yoga / Meditação","Jogos digitais / esports"
-];
+var CONFIG = window.PROFEF_SUPABASE_CONFIG || {};
+var supabaseClient = null;
+var words = [];
+var sessionToken = "";
+var sessionData = null;
 
-let words = [];
-let selectedPraticas = new Set();
-
-// build praticas grid
-const grid = document.getElementById('praticasGrid');
-PRATICAS.forEach(p => {
-  const div = document.createElement('div');
-  div.className = 'pratic-check';
-  div.innerHTML = `<span class="mark">⬜</span><span>${p}</span>`;
-  div.addEventListener('click', () => {
-    if (selectedPraticas.has(p)) {
-      selectedPraticas.delete(p);
-      div.classList.remove('checked');
-      div.querySelector('.mark').textContent = '⬜';
-    } else {
-      selectedPraticas.add(p);
-      div.classList.add('checked');
-      div.querySelector('.mark').textContent = '✅';
-    }
-  });
-  grid.appendChild(div);
-});
-
+function getTokenFromUrl(){
+  try{
+    return new URLSearchParams(window.location.search).get("token") || "";
+  }catch(e){
+    return "";
+  }
+}
+function safeText(v){
+  return (v || "").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; });
+}
+function setSessionState(type, title, desc){
+  var badge = document.getElementById("sessionBadge");
+  badge.className = "session-badge " + type;
+  badge.textContent = type === "ok" ? "Sessao aberta" : (type === "warn" ? "Atencao" : "Sessao indisponivel");
+  document.getElementById("sessionTitle").textContent = title;
+  document.getElementById("sessionDesc").textContent = desc;
+}
+function renderChips() {
+  var box = document.getElementById("chipsBox");
+  document.getElementById("wordCounter").textContent = words.length + "/5";
+  document.getElementById("submitBtn").disabled = words.length !== 5 || !sessionData || sessionData.status !== "open";
+  if (words.length === 0) {
+    box.innerHTML = '<span class="chips-empty">Suas 5 palavras aparecerao aqui...</span>';
+    return;
+  }
+  box.innerHTML = words.map(function(w, i){
+    return '<span class="chip" onclick="removeWord(' + i + ')"><span class="num">' + (i + 1) + '.</span> ' + safeText(w) + ' <span style="opacity:0.5">x</span></span>';
+  }).join("");
+}
 function addWord() {
-  const inp = document.getElementById('wordInput');
-  const w = inp.value.trim();
-  if (!w || words.length >= 10) return;
+  var inp = document.getElementById('wordInput');
+  var w = inp.value.trim();
+  if (!w || words.length >= 5) return;
   words.push(w);
   inp.value = '';
   renderChips();
 }
-
 function removeWord(i) {
   words.splice(i, 1);
   renderChips();
 }
-
-function renderChips() {
-  const box = document.getElementById('chipsBox');
-  if (words.length === 0) {
-    box.innerHTML = '<span class="chips-empty">Suas palavras aparecerão aqui...</span>';
+async function loadSession(){
+  if(!CONFIG.url || !CONFIG.anonKey || !window.supabase){
+    setSessionState("err", "Supabase nao configurado", "O arquivo supabase-config.js precisa ser preenchido antes de usar o formulario.");
     return;
   }
-  box.innerHTML = words.map((w,i) =>
-    `<span class="chip" onclick="removeWord(${i})">
-      <span class="num">${i+1}.</span> ${w} <span style="opacity:0.5">×</span>
-    </span>`
-  ).join('');
+  sessionToken = getTokenFromUrl();
+  if(!sessionToken){
+    setSessionState("err", "Link invalido", "Este formulario precisa ser acessado pelo QR ou link enviado pelo professor.");
+    return;
+  }
+  supabaseClient = window.supabase.createClient(CONFIG.url, CONFIG.anonKey);
+  var resp = await supabaseClient.rpc("get_public_talp_session", { p_token: sessionToken });
+  if(resp.error || !resp.data || !resp.data.length){
+    setSessionState("err", "Sessao nao encontrada", "O token informado nao corresponde a uma sessao TALP valida.");
+    return;
+  }
+  sessionData = resp.data[0];
+  document.getElementById("inducerWord").textContent = '"' + (sessionData.inducer_term || "Educacao Fisica no Ensino Medio") + '"';
+  if(sessionData.status !== "open"){
+    setSessionState("err", "Sessao encerrada", "Esta sessao TALP nao esta aberta para receber respostas.");
+    return;
+  }
+  setSessionState("ok", "Sessao TALP validada", "Turma " + (sessionData.grade || "-") + " | " + (sessionData.class_name || "-") + ". Preencha suas 5 palavras e envie.");
+  document.getElementById("formArea").style.display = "block";
+  renderChips();
 }
-
-function submitForm() {
-  if (words.length === 0) {
-    alert('Por favor, adicione pelo menos uma palavra na associação livre antes de enviar.');
+async function submitForm() {
+  var errorBox = document.getElementById("errorBox");
+  errorBox.textContent = "";
+  if (words.length !== 5) {
+    errorBox.textContent = "Voce precisa informar exatamente 5 palavras.";
     return;
   }
-
-  // Compact payload to keep QR Code scannable
-  const data = {
-    t: words.slice(0, 8),                         // talp (max 8)
-    p: [...selectedPraticas].slice(0, 10),         // praticas conhecidas
-    d: document.getElementById('desejo').value.trim().slice(0, 60),
-    i: document.getElementById('invisivel').value.trim().slice(0, 60),
-    b: document.getElementById('barreira').value.trim().slice(0, 60),
-  };
-
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-
-  // Hide form, show QR
-  document.getElementById('formArea').style.display = 'none';
-  const ss = document.getElementById('successScreen');
-  ss.style.display = 'block';
-  ss.innerHTML = `
-    <div class="big-icon">✅</div>
-    <h2>Pronto!</h2>
-    <p style="margin-bottom:20px;">Mostre este QR Code para o professor escanear.</p>
-    <div id="alunoQR" style="
-      width:220px; height:220px; margin:0 auto 20px;
-      background:white; border-radius:12px; padding:10px;
-      box-shadow:0 4px 20px rgba(13,33,55,0.15);
-      display:flex; align-items:center; justify-content:center;
-    "></div>
-    <div style="margin-top:10px; font-size:12px; color:var(--text-light); word-break:break-all; background:#fff; border:1px dashed var(--border); padding:10px; border-radius:10px;">
-      <strong>Código (fallback):</strong>
-      <div id="alunoCode" style="margin-top:6px;"></div>
-    </div>
-    <p style="font-size:12px; color:var(--text-light); margin-bottom:16px;">
-      Mantenha a tela no brilho máximo para facilitar a leitura.
-    </p>
-    <button onclick="document.getElementById('formArea').style.display='block';document.getElementById('successScreen').style.display='none';" style="
-      background:none; border:1.5px solid var(--border); border-radius:8px;
-      padding:10px 20px; font-size:13px; cursor:pointer; color:var(--text-mid);
-    ">← Editar respostas</button>
-  `;
-
-  // Generate QR Code
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', () => {
-    document.getElementById('alunoCode').textContent = 'PROFEF:' + encoded;
-    new QRCode(document.getElementById('alunoQR'), {
-      text: 'PROFEF:' + encoded,
-      width: 200, height: 200,
-      colorDark: '#0d2137',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.L
-    });
+  if (!sessionData || sessionData.status !== "open") {
+    errorBox.textContent = "A sessao nao esta aberta para receber respostas.";
+    return;
+  }
+  var btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+  var resp = await supabaseClient.rpc("submit_talp_response", {
+    p_token: sessionToken,
+    p_evoked_words: words,
+    p_desired_learning: document.getElementById("desejo").value.trim(),
+    p_rarely_in_classes: document.getElementById("invisivel").value.trim(),
+    p_barriers: document.getElementById("barreira").value.trim()
   });
+  if(resp.error){
+    errorBox.textContent = resp.error.message || "Nao foi possivel enviar suas respostas.";
+    btn.disabled = false;
+    btn.textContent = "Enviar respostas";
+    return;
+  }
+  document.getElementById("formArea").style.display = "none";
+  document.getElementById("successScreen").style.display = "block";
 }
 
-function loadScript(src, cb) {
-  if (document.querySelector(`script[src="${src}"]`)) { cb(); return; }
-  const s = document.createElement('script');
-  s.src = src; s.onload = cb;
-  document.head.appendChild(s);
-}
+loadSession();
 </script>
 </body>
 </html>
