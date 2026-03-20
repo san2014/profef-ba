@@ -581,7 +581,8 @@ var state = {
     saveTimer: null,
     saveInFlight: false,
     lastSavedFingerprint: "",
-    hasLocalSnapshot: false
+    hasLocalSnapshot: false,
+    draftPersistenceEnabled: false
   }
 };
 
@@ -789,6 +790,7 @@ async function handleAuthSession(session){
   state.supabase.session = session || null;
   state.supabase.teacher = null;
   state.supabase.evaluations = [];
+  state.supabase.draftPersistenceEnabled = false;
   if(session){
     try{
       await ensureTeacherProfile();
@@ -1323,6 +1325,13 @@ function getEvaluationFingerprint(snapshot){
     return Date.now().toString();
   }
 }
+function findMatchingRemoteEvaluation(snapshot){
+  if(!snapshot || !Array.isArray(state.supabase.evaluations) || !state.supabase.evaluations.length) return null;
+  var fingerprint = getEvaluationFingerprint(snapshot);
+  return state.supabase.evaluations.find(function(item){
+    return getEvaluationFingerprint(item && item.payload ? item.payload : {}) === fingerprint;
+  }) || null;
+}
 function applyEvaluationRecord(record){
   if(!record) return;
   var snapshot = record.payload || null;
@@ -1360,6 +1369,14 @@ async function saveEvaluationToSupabase(status, opts){
   if(opts.skipIfUnchanged && fingerprint === state.supabase.lastSavedFingerprint) return null;
   state.supabase.saveInFlight = true;
   try{
+    var existingRemote = null;
+    if(!isUuid(state.currentEvalId)){
+      existingRemote = findMatchingRemoteEvaluation(snapshot);
+      if(existingRemote){
+        state.currentEvalId = existingRemote.id;
+        state.supabase.lastSavedFingerprint = fingerprint;
+      }
+    }
     var payload = {
       teacher_id: state.supabase.teacher.id,
       status: status || "draft",
@@ -1383,7 +1400,7 @@ async function saveEvaluationToSupabase(status, opts){
   }
 }
 async function scheduleRemoteDraftSave(){
-  if(!state.supabase.client || !state.supabase.teacher) return;
+  if(!state.supabase.client || !state.supabase.teacher || !state.supabase.draftPersistenceEnabled) return;
   if(state.supabase.saveTimer) clearTimeout(state.supabase.saveTimer);
   state.supabase.saveTimer = setTimeout(function(){
     saveEvaluationToSupabase("draft", { skipIfUnchanged: true }).catch(function(err){
@@ -1405,6 +1422,10 @@ async function loadTeacherEvaluations(restoreDraft){
     var target = null;
     if(isUuid(state.currentEvalId)){
       target = state.supabase.evaluations.find(function(item){ return item.id === state.currentEvalId; }) || null;
+    }
+    if(!target && state.supabase.hasLocalSnapshot){
+      target = findMatchingRemoteEvaluation(buildEvaluationSnapshot("draft"));
+      if(target) state.currentEvalId = target.id;
     }
     if(!target && !state.supabase.hasLocalSnapshot){
       target = state.supabase.evaluations.find(function(item){ return item.status === "draft"; }) || state.supabase.evaluations[0] || null;
@@ -1449,6 +1470,7 @@ function saveAvaliacaoTurma(){
   }catch(e){ return null; }
 }
 async function salvarAvaliacao(){
+  state.supabase.draftPersistenceEnabled = true;
   saveAvaliacaoTurma();
   if(state.supabase.client && state.supabase.teacher){
     try{
@@ -1518,6 +1540,7 @@ function newPlanejamento(){
   clearFormFields();
   resetAll();
   state.supabase.lastSavedFingerprint = "";
+  state.supabase.draftPersistenceEnabled = true;
   updateNav();
   renderTalp();
   updateRespostasUI();
@@ -1583,6 +1606,7 @@ async function abrirAvaliacaoEdicao(evalId, index){
   if(ev.payload) applyEvaluationRecord(ev);
   else aplicarAvaliacaoNoPlano(ev);
   state.currentEvalId = isUuid(ev.id) ? ev.id : null;
+  state.supabase.draftPersistenceEnabled = true;
   startFlow(1);
   if(state.supabase.client && state.currentTalpSessionId) loadActiveTalpSession();
 }
