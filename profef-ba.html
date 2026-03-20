@@ -36,6 +36,9 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--
 .auth-chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.82)}
 .auth-chip.ok{background:rgba(37,163,147,.18);color:#d8fff9}
 .auth-chip.warn{background:rgba(212,160,67,.16);color:#ffe3af}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.hdr-btn:hover{background:rgba(255,255,255,.18);transform:translateY(-1px);box-shadow:none}
+.hdr-btn[disabled]{opacity:.6;cursor:wait;transform:none;pointer-events:none}
 .snav{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,.08);overflow-x:auto}
 .snav-in{max-width:1100px;margin:0 auto;display:flex;padding:0 24px}
 .si{display:flex;align-items:center;gap:10px;padding:12px 20px;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
@@ -254,8 +257,10 @@ body.home-mode .home{display:block}
       </div>
     </div>
     <div class="auth-mini">
-      <span class="app-ver" id="appVersion">v0.1.00</span>
+      <span class="app-ver" id="appVersion">v0.1.01</span>
       <span class="auth-chip warn" id="authSummary">Professor nao autenticado</span>
+      <button class="btn bsm hdr-btn" onclick="openHome()">Home</button>
+      <button class="btn bsm hdr-btn" id="draftSaveBtn" onclick="salvarRascunhoPlanejamento()" style="display:none;">Salvar rascunho</button>
       <button class="btn btn-p bsm" id="authActionBtn" onclick="toggleAuthAction()">Entrar</button>
       <div class="hsteps" id="hsteps"></div>
     </div>
@@ -279,6 +284,7 @@ body.home-mode .home{display:block}
       <p>Consulte as avaliacoes ja exportadas em PDF e acesse o fluxo de etapas para criar um novo planejamento. O TALP da turma agora pode ser coletado por sessao com Supabase sem mudar o layout principal.</p>
     </div>
     <div class="home-actions">
+      <button class="btn btn-s" id="resumePlanningBtn" onclick="resumePlanejamento()" style="display:none;">Continuar Planejamento</button>
       <button class="btn btn-p" onclick="newPlanejamento()">+ Novo Planejamento</button>
     </div>
   </div>
@@ -672,6 +678,27 @@ function loadAll(){
 function resetAll(){
   localStorage.removeItem(LS_KEY);
 }
+function hasPlanningInProgress(){
+  if(state.currentEvalId || state.currentTalpSessionId) return true;
+  if((state.talp && state.talp.length) || (state.respostas && state.respostas.length)) return true;
+  if(state.prac && (state.prac[1].length || state.prac[2].length || state.prac[3].length)) return true;
+  return Object.keys(collectFields()).some(function(id){
+    return trimValue(gv(id)) !== "";
+  });
+}
+function updateHomeActions(){
+  var resumeBtn = document.getElementById("resumePlanningBtn");
+  if(!resumeBtn) return;
+  resumeBtn.style.display = hasPlanningInProgress() ? "inline-flex" : "none";
+}
+function updateDraftSaveButton(){
+  var btn = document.getElementById("draftSaveBtn");
+  if(!btn) return;
+  var visible = state.supabase.draftPersistenceEnabled && !document.body.classList.contains("home-mode");
+  btn.style.display = visible ? "inline-flex" : "none";
+  btn.disabled = !!state.supabase.saveInFlight;
+  btn.textContent = state.supabase.saveInFlight ? "Salvando..." : "Salvar rascunho";
+}
 function gv(id){
   var el = document.getElementById(id);
   return el && typeof el.value !== "undefined" ? el.value : "";
@@ -807,6 +834,7 @@ async function handleAuthSession(session){
     renderSessionPanel();
   }
   updateAuthUI();
+  updateDraftSaveButton();
   renderHome();
 }
 async function signInTeacher(){
@@ -1368,6 +1396,7 @@ async function saveEvaluationToSupabase(status, opts){
   var fingerprint = getEvaluationFingerprint(snapshot);
   if(opts.skipIfUnchanged && fingerprint === state.supabase.lastSavedFingerprint) return null;
   state.supabase.saveInFlight = true;
+  updateDraftSaveButton();
   try{
     var existingRemote = null;
     if(!isUuid(state.currentEvalId)){
@@ -1397,16 +1426,8 @@ async function saveEvaluationToSupabase(status, opts){
     return resp.data;
   }finally{
     state.supabase.saveInFlight = false;
+    updateDraftSaveButton();
   }
-}
-async function scheduleRemoteDraftSave(){
-  if(!state.supabase.client || !state.supabase.teacher || !state.supabase.draftPersistenceEnabled) return;
-  if(state.supabase.saveTimer) clearTimeout(state.supabase.saveTimer);
-  state.supabase.saveTimer = setTimeout(function(){
-    saveEvaluationToSupabase("draft", { skipIfUnchanged: true }).catch(function(err){
-      console.error("Falha ao salvar rascunho remoto:", err);
-    });
-  }, 1200);
 }
 async function loadTeacherEvaluations(restoreDraft){
   if(!state.supabase.client || !state.supabase.teacher) return [];
@@ -1469,6 +1490,22 @@ function saveAvaliacaoTurma(){
     return payload;
   }catch(e){ return null; }
 }
+async function salvarRascunhoPlanejamento(){
+  state.supabase.draftPersistenceEnabled = true;
+  saveAvaliacaoTurma();
+  saveAll();
+  if(state.supabase.client && state.supabase.teacher){
+    try{
+      await saveEvaluationToSupabase("draft", { skipIfUnchanged: false });
+    }catch(err){
+      alert(err.message || "Nao foi possivel salvar o rascunho no Supabase.");
+      return;
+    }
+    toast("Rascunho salvo.");
+    return;
+  }
+  toast("Rascunho salvo neste navegador.");
+}
 async function salvarAvaliacao(){
   state.supabase.draftPersistenceEnabled = true;
   saveAvaliacaoTurma();
@@ -1490,6 +1527,8 @@ function exportPdf(){
 }
 function renderHome(){
   var root = document.getElementById("homeEvalList");
+  updateHomeActions();
+  updateDraftSaveButton();
   var list = (state.supabase.evaluations && state.supabase.evaluations.length)
     ? state.supabase.evaluations
     : loadAvaliacoesHistorico();
@@ -1510,7 +1549,11 @@ function renderHome(){
 }
 function openHome(){
   document.body.classList.add("home-mode");
+  updateDraftSaveButton();
   renderHome();
+}
+function resumePlanejamento(){
+  startFlow(state.step || 1);
 }
 function resetPlanState(){
   state.step = 1;
@@ -1635,6 +1678,7 @@ async function excluirAvaliacao(evalId, index){
 }
 function startFlow(step){
   document.body.classList.remove("home-mode");
+  updateDraftSaveButton();
   goTo(step || 1);
 }
 function goTo(s) {
@@ -1705,15 +1749,8 @@ function toast(msg) {
   document.body.appendChild(t);
   setTimeout(function(){ t.remove(); }, 3000);
 }
-window.addEventListener("beforeunload", saveAll);
-setInterval(function(){
-  saveAll();
-  scheduleRemoteDraftSave();
-}, 1500);
 document.addEventListener("input", function(e){
   if(e && e.target && (e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA" || e.target.tagName==="SELECT")) {
-    saveAll();
-    scheduleRemoteDraftSave();
     if(["serie","turma","escola","municipio","anoLetivo"].indexOf(e.target.id) >= 0) updateClassLabel();
   }
 });
