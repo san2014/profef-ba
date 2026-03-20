@@ -256,7 +256,6 @@ body.home-mode .home{display:block}
     <div class="auth-mini">
       <span class="app-ver" id="appVersion">v0.1.00</span>
       <span class="auth-chip warn" id="authSummary">Professor nao autenticado</span>
-      <button class="btn btn-s bsm" onclick="openConfigModal()">Configurar</button>
       <button class="btn btn-p bsm" id="authActionBtn" onclick="toggleAuthAction()">Entrar</button>
       <div class="hsteps" id="hsteps"></div>
     </div>
@@ -558,22 +557,7 @@ body.home-mode .home{display:block}
     </div>
     <div class="auth-error" id="authError"></div>
     <div class="macts">
-      <button class="btn btn-s" onclick="openConfigModal()">Configurar Supabase</button>
       <button class="btn btn-p" onclick="signInTeacher()">Entrar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mo" id="configModal">
-  <div class="modal">
-    <h3>Configurar Supabase</h3>
-    <p>Edite os campos abaixo apenas para testes locais. Em deploy, o ideal e manter esses dados em <code>supabase-config.js</code>.</p>
-    <input type="text" id="cfgUrl" placeholder="https://SEU-PROJETO.supabase.co">
-    <textarea id="cfgAnonKey" placeholder="SUPABASE_ANON_KEY"></textarea>
-    <input type="text" id="cfgAlunoPath" placeholder="./talp-aluno.html">
-    <div class="macts">
-      <button class="btn btn-s" onclick="closeConfigModal()">Cancelar</button>
-      <button class="btn btn-p" onclick="saveRuntimeConfig()">Salvar configuracao</button>
     </div>
   </div>
 </div>
@@ -772,25 +756,6 @@ function explainFetchError(err, actionLabel){
     return "Nao foi possivel " + base + ". Verifique: 1) url e anonKey do Supabase, 2) se voce abriu em http://localhost e nao file://, 3) se o schema SQL foi reaplicado no projeto certo, 4) se a rede esta alcançando " + CONFIG.url + ".";
   }
   return (err && err.message) || ("Nao foi possivel " + base + ".");
-}
-function openConfigModal(){
-  document.getElementById("cfgUrl").value = CONFIG.url || "";
-  document.getElementById("cfgAnonKey").value = CONFIG.anonKey || "";
-  document.getElementById("cfgAlunoPath").value = CONFIG.alunoPagePath || "./talp-aluno.html";
-  document.getElementById("configModal").classList.add("open");
-}
-function closeConfigModal(){
-  document.getElementById("configModal").classList.remove("open");
-}
-function saveRuntimeConfig(){
-  CONFIG.url = trimValue(document.getElementById("cfgUrl").value);
-  CONFIG.anonKey = trimValue(document.getElementById("cfgAnonKey").value);
-  CONFIG.alunoPagePath = trimValue(document.getElementById("cfgAlunoPath").value) || "./talp-aluno.html";
-  localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(CONFIG));
-  state.supabase.client = createSupabaseClient();
-  closeConfigModal();
-  updateAuthUI();
-  initializeAuth();
 }
 function toggleAuthAction(){
   if(state.supabase.session){
@@ -1559,11 +1524,11 @@ document.addEventListener("input", function(e){
     if(["serie","turma","escola","municipio","anoLetivo"].indexOf(e.target.id) >= 0) updateClassLabel();
   }
 });
-document.getElementById("configModal").addEventListener("click", function(e){
-  if(e.target===this) closeConfigModal();
-});
 document.addEventListener("keydown", function(e){
-  if (e.key==="Escape") closeConfigModal();
+  if (e.key==="Escape") {
+    var gate = document.getElementById("authGate");
+    if(gate && !state.supabase.session) gate.classList.add("open");
+  }
 });
 
 (function init(){
