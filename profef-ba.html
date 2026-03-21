@@ -126,7 +126,7 @@ body.home-mode .home{display:block}
 .ri-w{display:flex;flex-wrap:wrap;gap:4px}
 .ri-wt{background:var(--cream2);border-radius:10px;padding:2px 8px;font-size:11px;color:var(--text2)}
 .ri-blk{margin-top:8px;font-size:11px;color:var(--text3);line-height:1.5}
-.ug{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px}
+.ug{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;margin-bottom:24px}
 @media(max-width:768px){.ug{grid-template-columns:1fr}.ta{grid-template-columns:1fr}.hdr-in{height:auto;padding:10px 0;align-items:flex-start}.home-h{flex-direction:column;align-items:flex-start}}
 .uc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)}
 .uh{padding:14px 18px;display:flex;align-items:center;gap:10px}
@@ -148,6 +148,20 @@ body.home-mode .home{display:block}
 .um{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
 .um textarea{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:7px 10px;font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:var(--text);background:#fff;outline:none;min-height:60px;resize:vertical;margin-bottom:8px;transition:border-color .2s}
 .um textarea:focus{border-color:var(--navy3)}
+.skill-panel{display:grid;gap:12px}
+.skill-toolbar{display:grid;grid-template-columns:1fr;gap:8px}
+.skill-toolbar select,.skill-toolbar input{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-family:"IBM Plex Sans",sans-serif;font-size:13px;color:var(--text);outline:none;background:#fff}
+.skill-toolbar select:focus,.skill-toolbar input:focus{border-color:var(--navy3)}
+.skill-list{border:1px solid var(--border);border-radius:8px;background:#fbfcfe;max-height:280px;overflow:auto;padding:10px}
+.skill-option{display:flex;align-items:flex-start;gap:8px;padding:10px 8px;border-bottom:1px solid #e7edf5;font-size:13px;line-height:1.6}
+.skill-option:last-child{border-bottom:none}
+.skill-option input{margin-top:2px}
+.skill-option span{display:block;min-width:0;word-break:break-word}
+.skill-summary{display:flex;flex-wrap:wrap;gap:6px;min-height:36px}
+.skill-chip{display:inline-flex;align-items:center;gap:6px;background:var(--cream);border:1px solid var(--cream2);border-radius:999px;padding:5px 10px;font-size:11px;color:var(--text2)}
+.skill-chip button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;line-height:1;padding:0}
+.skill-empty{font-size:12px;color:var(--text3)}
+.skill-hint{font-size:11px;color:var(--text3);line-height:1.5}
 .es{text-align:center;padding:24px;color:var(--text3);font-size:13px}
 .mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
 .ec{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)}
@@ -225,27 +239,67 @@ body.home-mode .home{display:block}
 .modal textarea,.modal input{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-family:"IBM Plex Sans",sans-serif;font-size:12px;outline:none;margin-bottom:12px}
 .modal textarea:focus,.modal input:focus{border-color:var(--teal)}
 .macts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-.auth-gate{position:fixed;inset:0;background:rgba(13,33,55,.82);display:none;align-items:center;justify-content:center;padding:20px;z-index:350}
-.auth-gate.open{display:flex}
-.auth-gate-card{max-width:460px;width:100%;background:#fff;border-radius:12px;padding:28px;box-shadow:var(--s3)}
-.auth-gate-card h2{font-family:"Source Serif 4",serif;font-size:24px;color:var(--navy);margin-bottom:8px}
-.auth-gate-card p{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:18px}
+.auth-screen{min-height:100vh;display:none;align-items:center;justify-content:center;padding:32px 24px;background:radial-gradient(circle at top,#25486d 0%,#102338 42%,#091626 100%)}
+.auth-shell{width:100%;max-width:980px;display:grid;grid-template-columns:minmax(280px,1.1fr) minmax(320px,.9fr);background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--s3)}
+.auth-brand{padding:40px 36px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.auth-brand h1{font-family:"Source Serif 4",serif;font-size:40px;line-height:1.05}
+.auth-brand p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.78);max-width:420px}
+.auth-brand-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.12);color:var(--gold2);width:max-content}
+.auth-panel{padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+.auth-panel h2{font-family:"Source Serif 4",serif;font-size:26px;color:var(--navy);margin-bottom:8px}
+.auth-panel p{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:18px}
 .auth-fields{display:grid;gap:12px;margin-bottom:14px}
 .auth-fields input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:14px;outline:none}
 .auth-fields input:focus{border-color:var(--navy3);box-shadow:0 0 0 3px rgba(45,90,142,.12)}
 .auth-error{font-size:12px;color:var(--red);min-height:18px}
+.auth-loading{display:none;align-items:center;gap:10px;margin:14px 0 2px;color:var(--navy2);font-size:13px;font-weight:600}
+.auth-loading.open{display:flex}
+.auth-spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(26,58,92,.18);border-top-color:var(--navy3);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.auth-mode .hdr,body.auth-mode .snav,body.auth-mode .home,body.auth-mode .main{display:none}
+body.auth-mode .auth-screen{display:flex}
+@media(max-width:860px){.auth-shell{grid-template-columns:1fr}.auth-brand,.auth-panel{padding:28px 24px}.auth-brand h1{font-size:32px}}
 @media print{
   .home{display:none!important}
   .hdr,.snav,.acts,.pnote{display:none!important}
   .main{display:block!important;max-width:none!important;padding:0!important;margin:0!important}
   .screen{display:none!important}
-  #screen-5{display:block!important}
-  #screen-5 .ph{display:none!important}
+  #screen-4{display:block!important}
+  #screen-4 .ph{display:none!important}
   body{background:#fff!important}
 }
 </style>
 </head>
 <body>
+
+<section class="auth-screen" id="authScreen">
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <div>
+        <div class="auth-brand-badge">ProfEF-BA · v0.1.01</div>
+        <h1>Entrar no painel do professor</h1>
+        <p>Use sua conta do Supabase para acessar as avaliacoes, abrir sessoes TALP e continuar o planejamento no mesmo fluxo do prototipo.</p>
+      </div>
+      <p>A autenticacao agora acontece em uma tela dedicada. Ao clicar em entrar, mostramos o carregamento enquanto o Supabase valida a sessao.</p>
+    </div>
+    <div class="auth-panel">
+      <h2>Acesso do Professor</h2>
+      <p>O formulario do aluno continua publico por token. O painel do professor exige autenticacao para proteger turmas, sessoes e avaliacoes.</p>
+      <div class="auth-fields">
+        <input type="email" id="authEmail" placeholder="E-mail do professor">
+        <input type="password" id="authPassword" placeholder="Senha">
+      </div>
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-loading" id="authLoading">
+        <span class="auth-spinner"></span>
+        <span id="authLoadingText">Autenticando no Supabase...</span>
+      </div>
+      <div class="macts">
+        <button class="btn btn-p" id="authSubmitBtn" onclick="signInTeacher()">Entrar</button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <header class="hdr">
   <div class="hdr-in">
@@ -270,10 +324,9 @@ body.home-mode .home{display:block}
 <nav class="snav">
   <div class="snav-in" id="snav">
     <div class="si active" onclick="goTo(1)" data-step="1"><div class="sn">1</div><span>Contextualizacao</span></div>
-    <div class="si" onclick="goTo(2)" data-step="2"><div class="sn">2</div><span>Diagnostico TALP</span></div>
-    <div class="si" onclick="goTo(3)" data-step="3"><div class="sn">3</div><span>Unidades Didaticas</span></div>
-    <div class="si" onclick="goTo(4)" data-step="4"><div class="sn">4</div><span>Matriz Curricular</span></div>
-    <div class="si" onclick="goTo(5)" data-step="5"><div class="sn">5</div><span>Relatorio Final</span></div>
+    <div class="si" onclick="goTo(2)" data-step="2"><div class="sn">2</div><span>TALP e Unidades</span></div>
+    <div class="si" onclick="goTo(3)" data-step="3"><div class="sn">3</div><span>Matriz Curricular</span></div>
+    <div class="si" onclick="goTo(4)" data-step="4"><div class="sn">4</div><span>Relatorio Final</span></div>
   </div>
 </nav>
 
@@ -293,7 +346,7 @@ body.home-mode .home{display:block}
 <main class="main">
 <div class="screen active" id="screen-1">
   <div class="ph">
-    <div class="badge">Etapa 1 de 5</div>
+    <div class="badge">Etapa 1 de 4</div>
     <h1 class="ptitle">Contextualizacao Escolar</h1>
     <p class="pdesc">Situe o planejamento na realidade concreta da sua escola e turma.</p>
   </div>
@@ -347,9 +400,9 @@ body.home-mode .home{display:block}
 
 <div class="screen" id="screen-2">
   <div class="ph">
-    <div class="badge">Etapa 2 de 5</div>
-    <h1 class="ptitle">Diagnostico das Representacoes Sociais</h1>
-    <p class="pdesc">Crie uma sessao TALP, gere o QR com link do aluno e acompanhe as respostas diretamente no Supabase.</p>
+    <div class="badge">Etapa 2 de 4</div>
+    <h1 class="ptitle">TALP e Organizacao das Unidades</h1>
+    <p class="pdesc">Crie a sessao TALP, acompanhe as respostas e, na mesma tela, escolha as habilidades para Consolidar, Aprofundar e Ampliar.</p>
   </div>
 
   <div class="qp">
@@ -377,10 +430,10 @@ body.home-mode .home{display:block}
           <strong>Novo fluxo:</strong> professor abre a sessao &rarr; aluno escaneia o QR &rarr; aluno envia o formulario &rarr; o painel atualiza as respostas no banco
         </div>
         <div class="session-actions">
-          <button class="btn btn-s bsm" onclick="saveTalpDraft()">Salvar rascunho</button>
-          <button class="btn btn-g bsm" onclick="openTalpSession()">Abrir sessao</button>
-          <button class="btn bsm" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;" onclick="closeTalpSession()">Encerrar</button>
-          <button class="btn bsm" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;" onclick="refreshTalpResponses()">Atualizar respostas</button>
+          <button class="btn btn-s bsm" id="talpDraftBtn" onclick="saveTalpDraft()">Salvar rascunho</button>
+          <button class="btn btn-g bsm" id="talpOpenBtn" onclick="openTalpSession()">Abrir sessao</button>
+          <button class="btn bsm" id="talpCloseBtn" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;" onclick="closeTalpSession()">Encerrar</button>
+          <button class="btn bsm" id="talpRefreshBtn" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;" onclick="refreshTalpResponses()">Atualizar respostas</button>
         </div>
       </div>
       <div style="margin-top:12px;">
@@ -427,86 +480,93 @@ body.home-mode .home{display:block}
     </div>
   </div>
 
-  <div class="tb">
-    <h3>Adicionar Palavras Manualmente</h3>
-    <p>Coleta em papel ou observacao complementar? Insira evocacoes diretamente sem alterar o fluxo principal.</p>
-    <div class="twi">
-      <input type="text" id="talpInput" placeholder="Digite uma palavra e pressione Enter..." onkeydown="if(event.key==='Enter')addTalpBtn()">
-      <button class="btn btn-g bsm" onclick="addTalpBtn()">+ Adicionar</button>
+  <div class="fs">
+    <div class="fst">&#127919; Consolidar, Aprofundar e Ampliar</div>
+    <div class="info"><span style="font-size:16px;">&#128161;</span><div>Com base nas palavras do TALP, escolha habilidades ja cadastradas para cada eixo tematico. O professor filtra por eixo, busca por palavra-chave e marca rapidamente o que vai trabalhar em cada unidade.</div></div>
+    <div class="ug">
+      <div class="uc">
+        <div class="uh c1"><div class="ui">&#127807;</div><div><div class="ut">Consolidar</div><div class="us">Unidade I · Habilidades mais proximas do repertorio atual</div></div></div>
+        <div class="ub">
+          <div class="skill-panel">
+            <div class="skill-toolbar">
+              <select id="u1axisFilter" onchange="updateUnitFilter(1)">
+                <option value="">Todos os eixos</option>
+              </select>
+              <input type="text" id="u1skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(1)">
+            </div>
+            <div class="skill-list" id="u1skillsList"><div class="es">Carregando habilidades...</div></div>
+            <div class="skill-hint">Selecionadas para Consolidar</div>
+            <div class="skill-summary" id="u1list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+          </div>
+          <div class="um">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / encaminhamentos</label>
+            <textarea id="u1comp" placeholder="Observacoes do professor sobre como consolidar essas habilidades..."></textarea>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+            <textarea id="u1aval" placeholder="Ex.: portfolio, roda de conversa..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="uc">
+        <div class="uh c2"><div class="ui">&#128300;</div><div><div class="ut">Aprofundar</div><div class="us">Unidade II · Habilidades para analise e ampliacao critica</div></div></div>
+        <div class="ub">
+          <div class="skill-panel">
+            <div class="skill-toolbar">
+              <select id="u2axisFilter" onchange="updateUnitFilter(2)">
+                <option value="">Todos os eixos</option>
+              </select>
+              <input type="text" id="u2skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(2)">
+            </div>
+            <div class="skill-list" id="u2skillsList"><div class="es">Carregando habilidades...</div></div>
+            <div class="skill-hint">Selecionadas para Aprofundar</div>
+            <div class="skill-summary" id="u2list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+          </div>
+          <div class="um">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / encaminhamentos</label>
+            <textarea id="u2comp" placeholder="Observacoes do professor sobre como aprofundar essas habilidades..."></textarea>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+            <textarea id="u2aval" placeholder="Ex.: seminario, projeto..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="uc">
+        <div class="uh c3"><div class="ui">&#127757;</div><div><div class="ut">Ampliar</div><div class="us">Unidade III · Habilidades para diversificar o curriculo</div></div></div>
+        <div class="ub">
+          <div class="skill-panel">
+            <div class="skill-toolbar">
+              <select id="u3axisFilter" onchange="updateUnitFilter(3)">
+                <option value="">Todos os eixos</option>
+              </select>
+              <input type="text" id="u3skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(3)">
+            </div>
+            <div class="skill-list" id="u3skillsList"><div class="es">Carregando habilidades...</div></div>
+            <div class="skill-hint">Selecionadas para Ampliar</div>
+            <div class="skill-summary" id="u3list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+          </div>
+          <div class="um">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / encaminhamentos</label>
+            <textarea id="u3comp" placeholder="Observacoes do professor sobre como ampliar essas habilidades..."></textarea>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
+            <textarea id="u3aval" placeholder="Ex.: festival, mostra cultural..."></textarea>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="tw" id="talpWords"><span style="color:rgba(255,255,255,.3);font-size:13px;padding:4px;">As palavras aparecerao aqui...</span></div>
-    <div style="margin-top:10px;font-size:11px;opacity:.6;">Clique em uma palavra para remover</div>
   </div>
-
   <div class="acts">
     <button class="btn btn-s" onclick="goTo(1)">&larr; Voltar</button>
-    <div class="actsr"><button class="btn btn-p" onclick="nextStep(2)">Proxima Etapa: Unidades Didaticas &rarr;</button></div>
+    <div class="actsr"><button class="btn btn-p" onclick="nextStep(2)">Proxima Etapa: Matriz Curricular &rarr;</button></div>
   </div>
 </div>
 
 <div class="screen" id="screen-3">
   <div class="ph">
-    <div class="badge">Etapa 3 de 5</div>
-    <h1 class="ptitle">Organizacao das Unidades Didaticas</h1>
-    <p class="pdesc">Estruture o planejamento em tres unidades progressivas, alinhadas ao DCRB (2022).</p>
-  </div>
-  <div class="info"><span style="font-size:16px;">&#128161;</span><div>Digite praticas corporais e pressione Enter. O sistema classifica automaticamente nos eixos do DCRB.</div></div>
-  <div class="ug">
-    <div class="uc">
-      <div class="uh c1"><div class="ui">&#127807;</div><div><div class="ut">Consolidar</div><div class="us">Unidade I &middot; Praticas familiares</div></div></div>
-      <div class="ub">
-        <div class="pi"><input type="text" id="u1inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(1)"><button class="bic" onclick="addP(1)">+</button></div>
-        <div class="pl" id="u1list"><div class="es">Nenhuma pratica adicionada</div></div>
-        <div class="um">
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
-          <textarea id="u1comp" placeholder="Ex.: EF35LL03..."></textarea>
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
-          <textarea id="u1aval" placeholder="Ex.: Portfolio, roda de conversa..."></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="uc">
-      <div class="uh c2"><div class="ui">&#128300;</div><div><div class="ut">Aprofundar</div><div class="us">Unidade II &middot; Analise critica</div></div></div>
-      <div class="ub">
-        <div class="pi"><input type="text" id="u2inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(2)"><button class="bic" onclick="addP(2)">+</button></div>
-        <div class="pl" id="u2list"><div class="es">Nenhuma pratica adicionada</div></div>
-        <div class="um">
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
-          <textarea id="u2comp" placeholder="Ex.: Analise historica..."></textarea>
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
-          <textarea id="u2aval" placeholder="Ex.: Seminario, projeto..."></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="uc">
-      <div class="uh c3"><div class="ui">&#127757;</div><div><div class="ut">Ampliar</div><div class="us">Unidade III &middot; Justica curricular</div></div></div>
-      <div class="ub">
-        <div class="pi"><input type="text" id="u3inp" placeholder="Adicionar pratica..." onkeydown="if(event.key==='Enter')addP(3)"><button class="bic" onclick="addP(3)">+</button></div>
-        <div class="pl" id="u3list"><div class="es">Nenhuma pratica adicionada</div></div>
-        <div class="um">
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / Habilidades DCRB</label>
-          <textarea id="u3comp" placeholder="Ex.: Vivencias interculturais..."></textarea>
-          <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
-          <textarea id="u3aval" placeholder="Ex.: Festival cultural..."></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="acts">
-    <button class="btn btn-s" onclick="goTo(2)">&larr; Voltar</button>
-    <div class="actsr"><button class="btn btn-p" onclick="nextStep(3)">Proxima Etapa: Matriz Curricular &rarr;</button></div>
-  </div>
-</div>
-
-<div class="screen" id="screen-4">
-  <div class="ph">
-    <div class="badge">Etapa 4 de 5</div>
+    <div class="badge">Etapa 3 de 4</div>
     <h1 class="ptitle">Matriz de Justica Curricular</h1>
-    <p class="pdesc">Analise automatica da distribuicao das praticas nos eixos do DCRB (2022).</p>
+    <p class="pdesc">Analise automatica da distribuicao das habilidades selecionadas nos eixos do DCRB (2022).</p>
   </div>
   <div class="ind-panel">
     <h3 style="font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:14px;">&#128202; Indicador de Equilibrio Curricular</h3>
-    <div id="indBadge" class="ibadge yellow"><div class="ibig">&#128993;</div><div><div class="ibt">Adicione praticas para calcular</div><div class="ibs">Volte a Etapa 3 e adicione praticas nas Unidades Didaticas</div></div></div>
+    <div id="indBadge" class="ibadge yellow"><div class="ibig">&#128993;</div><div><div class="ibt">Adicione habilidades para calcular</div><div class="ibs">Volte a Etapa 2 e selecione habilidades para Consolidar, Aprofundar e Ampliar</div></div></div>
     <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;">Checklist de Diversidade Curricular</h4>
     <div class="cklist" id="checklist"></div>
   </div>
@@ -519,14 +579,14 @@ body.home-mode .home{display:block}
     </div>
   </div>
   <div class="acts">
-    <button class="btn btn-s" onclick="goTo(3)">&larr; Voltar</button>
-    <div class="actsr"><button class="btn btn-p" onclick="nextStep(4)">Gerar Relatorio Final &rarr;</button></div>
+    <button class="btn btn-s" onclick="goTo(2)">&larr; Voltar</button>
+    <div class="actsr"><button class="btn btn-p" onclick="nextStep(3)">Gerar Relatorio Final &rarr;</button></div>
   </div>
 </div>
 
-<div class="screen" id="screen-5">
+<div class="screen" id="screen-4">
   <div class="ph">
-    <div class="badge">Etapa 5 de 5</div>
+    <div class="badge">Etapa 4 de 4</div>
     <h1 class="ptitle">Relatorio Final do Planejamento</h1>
     <p class="pdesc">Resumo completo do plano de curso anual gerado pelo ProfEF-BA.</p>
   </div>
@@ -543,29 +603,14 @@ body.home-mode .home{display:block}
   <div class="rsec" id="rInd"></div>
   <div class="pnote">Para salvar como PDF: use <strong>Ctrl+P</strong> e selecione <em>"Salvar como PDF"</em>.</div>
   <div class="acts">
-    <button class="btn btn-s" onclick="goTo(4)">&larr; Voltar</button>
+    <button class="btn btn-s" onclick="goTo(3)">&larr; Voltar</button>
     <div class="actsr">
       <button class="btn btn-g" onclick="exportPdf()">&#128424; Exportar PDF</button>
-      <button class="btn btn-p" onclick="salvarAvaliacao()">&#128190; Salvar</button>
+      <button class="btn btn-p" id="finalSaveBtn" onclick="salvarAvaliacao()">&#128190; Salvar</button>
     </div>
   </div>
 </div>
 </main>
-
-<div class="auth-gate" id="authGate">
-  <div class="auth-gate-card">
-    <h2>Entrar no painel do professor</h2>
-    <p>Para validar o protótipo com um fluxo mais seguro, o painel do professor usa login real do Supabase. A página do aluno continua sem autenticação e valida a sessão pelo token.</p>
-    <div class="auth-fields">
-      <input type="email" id="authEmail" placeholder="E-mail do professor">
-      <input type="password" id="authPassword" placeholder="Senha">
-    </div>
-    <div class="auth-error" id="authError"></div>
-    <div class="macts">
-      <button class="btn btn-p" onclick="signInTeacher()">Entrar</button>
-    </div>
-  </div>
-</div>
 
 <script>
 var state = {
@@ -574,6 +619,11 @@ var state = {
   talp: [],
   respostas: [],
   prac: {1:[], 2:[], 3:[]},
+  unitFilters: {
+    1: { axisId: "", query: "" },
+    2: { axisId: "", query: "" },
+    3: { axisId: "", query: "" }
+  },
   currentEvalId: null,
   currentTalpSessionId: null,
   supabase: {
@@ -582,12 +632,15 @@ var state = {
     teacher: null,
     activeSession: null,
     evaluations: [],
+    thematicAxes: [],
     poller: null,
     saveTimer: null,
     saveInFlight: false,
+    actionLoading: {},
     lastSavedFingerprint: "",
     hasLocalSnapshot: false,
-    draftPersistenceEnabled: false
+    draftPersistenceEnabled: false,
+    authLoading: false
   }
 };
 
@@ -685,11 +738,35 @@ function updateDraftSaveButton(){
   btn.disabled = !!state.supabase.saveInFlight;
   btn.textContent = state.supabase.saveInFlight ? "Salvando..." : "Salvar rascunho";
 }
+function setButtonLoading(buttonId, isLoading, loadingText, idleText){
+  var btn = document.getElementById(buttonId);
+  if(!btn) return;
+  if(typeof idleText !== "undefined" && !btn.dataset.idleText) btn.dataset.idleText = idleText;
+  if(!btn.dataset.idleText) btn.dataset.idleText = btn.textContent;
+  btn.disabled = !!isLoading;
+  btn.textContent = isLoading ? (loadingText || "Carregando...") : btn.dataset.idleText;
+}
+function setSupabaseActionLoading(actionKey, isLoading){
+  state.supabase.actionLoading[actionKey] = !!isLoading;
+  if(actionKey === "talpDraft") setButtonLoading("talpDraftBtn", isLoading, "Salvando...", "Salvar rascunho");
+  if(actionKey === "talpOpen") setButtonLoading("talpOpenBtn", isLoading, "Abrindo...", "Abrir sessao");
+  if(actionKey === "talpClose") setButtonLoading("talpCloseBtn", isLoading, "Encerrando...", "Encerrar");
+  if(actionKey === "talpRefresh") setButtonLoading("talpRefreshBtn", isLoading, "Atualizando...", "Atualizar respostas");
+  if(actionKey === "finalSave") setButtonLoading("finalSaveBtn", isLoading, "Salvando...", "Salvar");
+}
 function gv(id){
   var el = document.getElementById(id);
   return el && typeof el.value !== "undefined" ? el.value : "";
 }
 function trimValue(v){ return (v || "").trim(); }
+function normalizeSearchText(v){
+  return (v || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 function safeText(v){ return (v || "").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 function formatDateTime(iso){
   if(!iso) return "-";
@@ -706,6 +783,47 @@ function classify(name) {
     }
   }
   return 2;
+}
+function getAxisMetaById(axisId){
+  var found = (state.supabase.thematicAxes || []).find(function(axis){ return axis.axis_id === axisId; });
+  if(found) return found;
+  var fallback = EIXOS.find(function(axis){ return String(axis.id) === String(axisId); });
+  if(!fallback) return null;
+  return {
+    axis_id: String(fallback.id),
+    axis_name: fallback.n,
+    axis_slug: "",
+    axis_sort_order: fallback.id + 1,
+    short_name: fallback.s,
+    icon: fallback.ic
+  };
+}
+function getAxisMetaByIndex(index){
+  return (state.supabase.thematicAxes || [])[index] || null;
+}
+function normalizeUnitItems(items, axisByName){
+  axisByName = axisByName || {};
+  return (items || []).map(function(item){
+    if(item && item.id && item.axisId) return item;
+    var legacyIndex = typeof item.e === "number" ? item.e : classify(item.n || "");
+    var axis = getAxisMetaByIndex(legacyIndex) || axisByName[normalizeSearchText(item.axisName || "")] || null;
+    return {
+      id: item.id || ("legacy-" + legacyIndex + "-" + normalizeSearchText(item.n || "").slice(0, 40)),
+      n: item.n || item.description || "",
+      e: legacyIndex,
+      axisId: axis ? axis.axis_id : "",
+      axisSlug: axis ? axis.axis_slug : "",
+      axisName: axis ? axis.axis_name : ((EIXOS[legacyIndex] && EIXOS[legacyIndex].n) || ""),
+      sortOrder: item.sortOrder || 0
+    };
+  });
+}
+function normalizeWizardStep(step){
+  var s = parseInt(step, 10) || 1;
+  if(s <= 2) return s;
+  if(s === 3) return 2;
+  if(s === 4) return 3;
+  return 4;
 }
 function indicadorClass(ind){
   if(ind==="Equilibrio Ampliado") return "green";
@@ -739,35 +857,52 @@ function createSupabaseClient(){
 function setAuthError(msg){
   document.getElementById("authError").textContent = msg || "";
 }
+function setAuthLoading(isLoading, message){
+  state.supabase.authLoading = !!isLoading;
+  var loading = document.getElementById("authLoading");
+  var loadingText = document.getElementById("authLoadingText");
+  var submitBtn = document.getElementById("authSubmitBtn");
+  if(loading) loading.classList.toggle("open", !!isLoading);
+  if(loadingText) loadingText.textContent = message || "Autenticando...";
+  if(submitBtn){
+    submitBtn.disabled = !!isLoading;
+    submitBtn.textContent = isLoading ? "Entrando..." : "Entrar";
+  }
+}
+function showAuthScreen(){
+  document.body.classList.add("auth-mode");
+}
+function hideAuthScreen(){
+  document.body.classList.remove("auth-mode");
+}
 function updateAuthUI(){
   var authSummary = document.getElementById("authSummary");
   var authBtn = document.getElementById("authActionBtn");
-  var gate = document.getElementById("authGate");
   if(isPlaceholderConfig()){
     authSummary.className = "auth-chip warn";
     authSummary.textContent = "Config do Supabase pendente";
     authBtn.textContent = "Entrar";
-    gate.classList.add("open");
+    showAuthScreen();
     return;
   }
   if(!isConfigured()){
     authSummary.className = "auth-chip warn";
     authSummary.textContent = "Supabase nao configurado";
     authBtn.textContent = "Entrar";
-    gate.classList.add("open");
+    showAuthScreen();
     return;
   }
   if(state.supabase.session && state.supabase.teacher){
     authSummary.className = "auth-chip ok";
     authSummary.textContent = state.supabase.teacher.full_name || state.supabase.session.user.email || "Professor autenticado";
     authBtn.textContent = "Sair";
-    gate.classList.remove("open");
+    hideAuthScreen();
     return;
   }
   authSummary.className = "auth-chip warn";
   authSummary.textContent = "Professor nao autenticado";
   authBtn.textContent = "Entrar";
-  gate.classList.add("open");
+  showAuthScreen();
 }
 function explainFetchError(err, actionLabel){
   var base = actionLabel || "executar a acao no Supabase";
@@ -784,7 +919,7 @@ function toggleAuthAction(){
     signOutTeacher();
     return;
   }
-  document.getElementById("authGate").classList.add("open");
+  showAuthScreen();
 }
 async function initializeAuth(){
   state.supabase.client = createSupabaseClient();
@@ -807,6 +942,7 @@ async function handleAuthSession(session){
   if(session){
     try{
       await ensureTeacherProfile();
+      await loadThematicAxes();
       await loadTeacherEvaluations(true);
       await loadActiveTalpSession();
     }catch(err){
@@ -816,9 +952,11 @@ async function handleAuthSession(session){
     state.currentEvalId = null;
     state.currentTalpSessionId = null;
     state.supabase.activeSession = null;
+    state.supabase.thematicAxes = [];
     stopTalpPolling();
     renderSessionPanel();
   }
+  setAuthLoading(false);
   updateAuthUI();
   updateDraftSaveButton();
   renderHome();
@@ -835,13 +973,16 @@ async function signInTeacher(){
     setAuthError("Informe e-mail e senha.");
     return;
   }
+  setAuthLoading(true, "Autenticando...");
   var resp = await state.supabase.client.auth.signInWithPassword({ email: email, password: password });
   if(resp.error){
+    setAuthLoading(false);
     setAuthError(resp.error.message || "Falha de autenticacao.");
   }
 }
 async function signOutTeacher(){
   if(!state.supabase.client) return;
+  setAuthLoading(true, "Encerrando sessao...");
   await state.supabase.client.auth.signOut();
 }
 async function ensureTeacherProfile(){
@@ -932,7 +1073,9 @@ async function openTalpSession(){
   return persistTalpSession("open");
 }
 async function persistTalpSession(targetStatus){
+  var actionKey = targetStatus === "draft" ? "talpDraft" : "talpOpen";
   try{
+    setSupabaseActionLoading(actionKey, true);
     if(isPlaceholderConfig()) throw new Error("Preencha supabase-config.js com a URL real do projeto e a anon key.");
     if(!state.supabase.client) throw new Error("Configure o Supabase antes de criar a sessao.");
     if(!state.supabase.session) throw new Error("Entre com sua conta de professor antes de criar a sessao.");
@@ -971,10 +1114,13 @@ async function persistTalpSession(targetStatus){
     toast(targetStatus === "draft" ? "Sessao TALP salva como rascunho." : "Sessao TALP aberta.");
   }catch(err){
     alert(explainFetchError(err, "abrir a sessao TALP"));
+  }finally{
+    setSupabaseActionLoading(actionKey, false);
   }
 }
 async function closeTalpSession(){
   try{
+    setSupabaseActionLoading("talpClose", true);
     if(!state.currentTalpSessionId) throw new Error("Nenhuma sessao TALP foi criada ainda.");
     var resp = await state.supabase.client
       .from("talp_sessions")
@@ -991,6 +1137,8 @@ async function closeTalpSession(){
     toast("Sessao TALP encerrada.");
   }catch(err){
     alert(explainFetchError(err, "encerrar a sessao TALP"));
+  }finally{
+    setSupabaseActionLoading("talpClose", false);
   }
 }
 async function loadActiveTalpSession(){
@@ -1084,6 +1232,7 @@ function openAlunoPage(){
 }
 async function refreshTalpResponses(){
   try{
+    setSupabaseActionLoading("talpRefresh", true);
     if(!state.currentTalpSessionId || !state.supabase.client){
       updateRespostasUI();
       return;
@@ -1111,6 +1260,8 @@ async function refreshTalpResponses(){
   }catch(err){
     console.error(err);
     alert(explainFetchError(err, "carregar respostas da sessao"));
+  }finally{
+    setSupabaseActionLoading("talpRefresh", false);
   }
 }
 function startTalpPolling(){
@@ -1180,6 +1331,7 @@ function renderTalpAnalysis() {
 }
 function addTalpBtn() {
   var inp = document.getElementById("talpInput");
+  if(!inp) return;
   var w = inp.value.trim();
   if (!w) return;
   state.talp.push({w:w, o:state.talp.length+1});
@@ -1193,6 +1345,10 @@ function removeTalp(i) {
 }
 function renderTalp() {
   var c = document.getElementById("talpWords");
+  if (!c) {
+    renderTalpAnalysis();
+    return;
+  }
   if (!state.talp.length) {
     c.innerHTML = '<span style="color:rgba(255,255,255,.3);font-size:13px;padding:4px;">As palavras aparecerao aqui...</span>';
   } else {
@@ -1200,19 +1356,115 @@ function renderTalp() {
   }
   renderTalpAnalysis();
 }
-function addP(u) {
-  var inp = document.getElementById("u" + u + "inp"), name = inp.value.trim();
-  if (!name) return;
-  state.prac[u].push({n:name, e:classify(name)});
-  inp.value = "";
+async function loadThematicAxes(){
+  if(!state.supabase.client || !state.supabase.teacher) return [];
+  var resp = await state.supabase.client.rpc("list_thematic_axes_with_skills");
+  if(resp.error) throw resp.error;
+  state.supabase.thematicAxes = (resp.data || []).map(function(axis, index){
+    var fallback = EIXOS[index] || {};
+    return {
+      axis_id: axis.axis_id,
+      axis_slug: axis.axis_slug,
+      axis_name: axis.axis_name,
+      axis_sort_order: axis.axis_sort_order,
+      short_name: fallback.s || axis.axis_name,
+      icon: fallback.ic || "•",
+      legacyIndex: typeof fallback.id === "number" ? fallback.id : index,
+      skills: Array.isArray(axis.skills) ? axis.skills : []
+    };
+  });
+  renderAxisFilterOptions();
+  [1,2,3].forEach(function(unit){ renderPrac(unit); });
+  return state.supabase.thematicAxes;
+}
+function renderAxisFilterOptions(){
+  [1,2,3].forEach(function(unit){
+    var select = document.getElementById("u" + unit + "axisFilter");
+    if(!select) return;
+    var current = state.unitFilters[unit].axisId || "";
+    select.innerHTML = '<option value="">Todos os eixos</option>' + (state.supabase.thematicAxes || []).map(function(axis){
+      return '<option value="' + safeText(axis.axis_id) + '">' + safeText(axis.axis_name) + '</option>';
+    }).join("");
+    select.value = current;
+  });
+}
+function updateUnitFilter(unit){
+  var select = document.getElementById("u" + unit + "axisFilter");
+  var search = document.getElementById("u" + unit + "skillSearch");
+  state.unitFilters[unit] = {
+    axisId: select ? select.value : "",
+    query: search ? search.value : ""
+  };
+  renderPrac(unit);
+}
+function getFilteredSkills(unit){
+  var filter = state.unitFilters[unit] || { axisId: "", query: "" };
+  var selectedIds = new Set((state.prac[unit] || []).map(function(item){ return item.id; }));
+  var query = normalizeSearchText(filter.query);
+  return (state.supabase.thematicAxes || []).filter(function(axis){
+    return !filter.axisId || axis.axis_id === filter.axisId;
+  }).map(function(axis){
+    return {
+      axis: axis,
+      skills: (axis.skills || []).filter(function(skill){
+        if(selectedIds.has(skill.id)) return false;
+        if(!query) return true;
+        return normalizeSearchText(skill.description).indexOf(query) >= 0 ||
+          normalizeSearchText(axis.axis_name).indexOf(query) >= 0;
+      })
+    };
+  }).filter(function(group){ return group.skills.length > 0; });
+}
+function toggleSkillForUnit(unit, axisId, skillId, shouldAdd){
+  var axis = getAxisMetaById(axisId);
+  if(!axis) return;
+  var skill = (axis.skills || []).find(function(item){ return item.id === skillId; });
+  if(!skill) return;
+  var current = state.prac[unit] || [];
+  var existingIdx = current.findIndex(function(item){ return item.id === skillId; });
+  if(shouldAdd && existingIdx < 0){
+    current.push({
+      id: skill.id,
+      n: skill.description,
+      e: typeof axis.legacyIndex === "number" ? axis.legacyIndex : 0,
+      axisId: axis.axis_id,
+      axisSlug: axis.axis_slug,
+      axisName: axis.axis_name,
+      sortOrder: skill.sort_order
+    });
+  }
+  if(!shouldAdd && existingIdx >= 0){
+    current.splice(existingIdx, 1);
+  }
+  state.prac[unit] = current;
+  renderPrac(unit);
+}
+function removeP(u,i) {
+  state.prac[u].splice(i,1);
   renderPrac(u);
 }
-function removeP(u,i) { state.prac[u].splice(i,1); renderPrac(u); }
 function renderPrac(u) {
-  var c = document.getElementById("u" + u + "list"), list = state.prac[u];
-  if (!list.length) { c.innerHTML = '<div class="es">Nenhuma pratica adicionada</div>'; return; }
+  var c = document.getElementById("u" + u + "list"), list = state.prac[u] || [];
+  var available = document.getElementById("u" + u + "skillsList");
+  if(available){
+    if(!state.supabase.thematicAxes.length){
+      available.innerHTML = '<div class="es">Entre no painel para carregar eixos e habilidades.</div>';
+    }else{
+      var groups = getFilteredSkills(u);
+      available.innerHTML = groups.length ? groups.map(function(group){
+        return '<div style="margin-bottom:10px;"><div class="skill-hint" style="margin-bottom:6px;"><strong>' + safeText(group.axis.axis_name) + '</strong></div>' + group.skills.map(function(skill){
+          return '<label class="skill-option"><input type="checkbox" onchange="toggleSkillForUnit(' + u + ',\'' + group.axis.axis_id + '\',\'' + skill.id + '\', this.checked)"><span>' + safeText(skill.description) + '</span></label>';
+        }).join("") + '</div>';
+      }).join("") : '<div class="es">Nenhuma habilidade encontrada para esse filtro.</div>';
+    }
+  }
+  if (!list.length) {
+    c.innerHTML = '<div class="skill-empty">Nenhuma habilidade selecionada</div>';
+    return;
+  }
   c.innerHTML = list.map(function(p,i) {
-    return '<div class="pitem"><span>' + safeText(p.n) + '</span><span style="display:flex;align-items:center;gap:4px;"><span class="etag t' + p.e + '">' + EIXOS[p.e].s + '</span><button class="rbtn" onclick="removeP(' + u + ',' + i + ')">x</button></span></div>';
+    var axisMeta = getAxisMetaById(p.axisId) || getAxisMetaByIndex(p.e) || {};
+    return '<span class="skill-chip">' + safeText(p.n) + '<span class="etag t' + (typeof p.e === "number" ? p.e : 0) + '">' + safeText(axisMeta.short_name || axisMeta.axis_name || EIXOS[p.e || 0].s) + '</span><button onclick="removeP(' + u + ',' + i + ')">x</button></span>';
   }).join("");
 }
 function getAllPrac() {
@@ -1227,7 +1479,7 @@ function renderMatrix() {
   var cov = counts.filter(function(c){ return c>0; }).length;
   var b = document.getElementById("indBadge");
   var lvl, icon, title, sub;
-  if (!total) { lvl="yellow";icon="&#128993;";title="Nenhuma pratica adicionada";sub="Adicione praticas nas Unidades Didaticas."; }
+  if (!total) { lvl="yellow";icon="&#128993;";title="Nenhuma habilidade selecionada";sub="Selecione habilidades nas unidades da Etapa 2."; }
   else if (cov>=3) { lvl="green";icon="&#128994;";title="Equilibrio Ampliado";sub=cov+" eixos contemplados. Planejamento diversificado!"; }
   else if (cov===2) { lvl="yellow";icon="&#128993;";title="Equilibrio Parcial";sub=cov+" eixos. Considere ampliar a diversidade."; }
   else { lvl="red";icon="&#128308;";title="Concentracao Excessiva";sub="Apenas "+cov+" eixo(s). Risco de reducao curricular."; }
@@ -1240,7 +1492,7 @@ function renderMatrix() {
   document.getElementById("matrixGrid").innerHTML = EIXOS.map(function(e){
     var cnt=counts[e.id], pct=total?Math.round(cnt/total*100):0;
     var tags = all.filter(function(p){ return p.e===e.id; }).map(function(p){ return '<span class="ept">' + safeText(p.n) + "</span>"; }).join("");
-    return '<div class="ec"><div class="eh e' + e.id + '"><span style="font-size:20px;">' + e.ic + '</span><span class="en">' + e.n + '</span></div><div class="ebody"><div class="ebar"><div class="ebarfill b' + e.id + '" style="width:' + pct + '%"></div></div><div class="estats"><span>' + cnt + ' pratica(s)</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;">' + pct + '%</span></div><div style="margin-top:10px;">' + (tags || '<span style="font-size:11px;color:var(--text3);">Nenhuma pratica</span>') + "</div></div></div>";
+    return '<div class="ec"><div class="eh e' + e.id + '"><span style="font-size:20px;">' + e.ic + '</span><span class="en">' + e.n + '</span></div><div class="ebody"><div class="ebar"><div class="ebarfill b' + e.id + '" style="width:' + pct + '%"></div></div><div class="estats"><span>' + cnt + ' habilidade(s)</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;">' + pct + '%</span></div><div style="margin-top:10px;">' + (tags || '<span style="font-size:11px;color:var(--text3);">Nenhuma habilidade</span>') + "</div></div></div>";
   }).join("");
   if (total) {
     document.getElementById("donutSec").style.display="block";
@@ -1262,7 +1514,7 @@ function renderDonut(counts, total) {
     paths+="<path d='M "+xi1+" "+yi1+" L "+x1+" "+y1+" A "+r+" "+r+" 0 "+lg+" 1 "+x2+" "+y2+" L "+xi2+" "+yi2+" A "+ri+" "+ri+" 0 "+lg+" 0 "+xi1+" "+yi1+" Z' fill='"+colors[i]+"' opacity='.9'/>";
     start+=a;
   });
-  document.getElementById("donutSvg").innerHTML = paths + "<text x='"+cx+"' y='"+(cy-6)+"' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='#1a1a2e'>"+total+"</text>" + "<text x='"+cx+"' y='"+(cy+12)+"' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b7a8d'>praticas</text>";
+  document.getElementById("donutSvg").innerHTML = paths + "<text x='"+cx+"' y='"+(cy-6)+"' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='#1a1a2e'>"+total+"</text>" + "<text x='"+cx+"' y='"+(cy+12)+"' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b7a8d'>habilidades</text>";
   document.getElementById("donutLeg").innerHTML = EIXOS.map(function(e,i){
     return '<div class="dli"><div class="dld" style="background:'+colors[i]+'"></div><span style="font-size:12px;">'+e.s+'</span><span class="dlp">'+Math.round(counts[i]/total*100)+"%</span></div>";
   }).join("");
@@ -1304,6 +1556,7 @@ function buildAvaliacaoPayload(existingId){
       eixosCobertos: cobertura,
       totalEixos: 6,
       totalPraticas: total,
+      totalHabilidades: total,
       distribuicaoPorEixo: EIXOS.map(function(e,i){ return { eixo: e.n, quantidade: counts[i], percentual: Math.round((counts[i]/(total||1))*100) }; })
     }
   };
@@ -1354,11 +1607,15 @@ function applyEvaluationRecord(record){
     clearFormFields();
     applyFields(snapshot.fields);
     var ui = snapshot.uiState || {};
-    state.step = ui.step || 1;
+    state.step = normalizeWizardStep(ui.step || 1);
     state.done = new Set(ui.done || []);
     state.talp = Array.isArray(ui.talp) ? ui.talp : [];
     state.respostas = Array.isArray(ui.respostas) ? ui.respostas : [];
-    state.prac = ui.prac || {1:[],2:[],3:[]};
+    state.prac = {
+      1: normalizeUnitItems(ui.prac && ui.prac[1] ? ui.prac[1] : []),
+      2: normalizeUnitItems(ui.prac && ui.prac[2] ? ui.prac[2] : []),
+      3: normalizeUnitItems(ui.prac && ui.prac[3] ? ui.prac[3] : [])
+    };
     state.currentTalpSessionId = ui.currentTalpSessionId || null;
     state.currentEvalId = record.id || null;
   }else{
@@ -1370,6 +1627,7 @@ function applyEvaluationRecord(record){
   renderTalp();
   updateRespostasUI();
   renderTalpAnalysis();
+  renderAxisFilterOptions();
   [1,2,3].forEach(function(u){ renderPrac(u); });
   renderMatrix();
   renderSessionPanel();
@@ -1495,16 +1753,19 @@ async function salvarRascunhoPlanejamento(){
 async function salvarAvaliacao(){
   state.supabase.draftPersistenceEnabled = true;
   saveAvaliacaoTurma();
+  setSupabaseActionLoading("finalSave", true);
   if(state.supabase.client && state.supabase.teacher){
     try{
       await saveEvaluationToSupabase("completed", { skipIfUnchanged: false });
     }catch(err){
+      setSupabaseActionLoading("finalSave", false);
       alert(err.message || "Nao foi possivel salvar a avaliacao no Supabase.");
       return;
     }
   }
   resetAll();
   openHome();
+  setSupabaseActionLoading("finalSave", false);
   toast("Avaliacao salva com sucesso.");
 }
 function exportPdf(){
@@ -1529,7 +1790,7 @@ function renderHome(){
     var turmaLabel = (idt.serie||"-") + " | Turma " + (idt.turma||"-");
     var recordId = ev.id || content.id || "";
     var recordDate = ev.updated_at || content.generatedAt;
-    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(recordDate)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Praticas planejadas:</strong> '+(mat.totalPraticas||0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+recordId+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+recordId+'\','+idx+')">Excluir</button></div></article>';
+    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(recordDate)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Habilidades selecionadas:</strong> '+(mat.totalHabilidades || mat.totalPraticas || 0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+recordId+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+recordId+'\','+idx+')">Excluir</button></div></article>';
   }).join("");
 }
 function openHome(){
@@ -1543,6 +1804,11 @@ function resetPlanState(){
   state.talp = [];
   state.respostas = [];
   state.prac = {1:[], 2:[], 3:[]};
+  state.unitFilters = {
+    1: { axisId: "", query: "" },
+    2: { axisId: "", query: "" },
+    3: { axisId: "", query: "" }
+  };
   state.currentEvalId = null;
   state.currentTalpSessionId = null;
 }
@@ -1552,7 +1818,7 @@ function clearFormFields(){
     "espacos","materiais","contexto",
     "praticasVividas","praticasDesejadas","praticasInv","barreiras",
     "u1comp","u1aval","u2comp","u2aval","u3comp","u3aval",
-    "talpInput","u1inp","u2inp","u3inp","talpInducerTerm"
+    "u1skillSearch","u2skillSearch","u3skillSearch","talpInducerTerm"
   ].forEach(function(id){
     var el = document.getElementById(id);
     if(!el) return;
@@ -1570,6 +1836,7 @@ function newPlanejamento(){
   renderTalp();
   updateRespostasUI();
   renderTalpAnalysis();
+  renderAxisFilterOptions();
   [1,2,3].forEach(function(u){ renderPrac(u); });
   renderMatrix();
   renderSessionPanel();
@@ -1605,16 +1872,21 @@ function aplicarAvaliacaoNoPlano(ev){
   });
   state.respostas = Array.isArray(av.respostasTalp) ? av.respostasTalp : [];
   state.talp = Array.isArray(av.palavrasTalpManuais) ? av.palavrasTalpManuais : [];
+  var legacyAxisByName = {};
+  (state.supabase.thematicAxes || []).forEach(function(axis){
+    legacyAxisByName[normalizeSearchText(axis.axis_name)] = axis;
+  });
   state.prac = {
-    1: (ud.unidade1 && Array.isArray(ud.unidade1.praticas)) ? ud.unidade1.praticas : [],
-    2: (ud.unidade2 && Array.isArray(ud.unidade2.praticas)) ? ud.unidade2.praticas : [],
-    3: (ud.unidade3 && Array.isArray(ud.unidade3.praticas)) ? ud.unidade3.praticas : []
+    1: normalizeUnitItems((ud.unidade1 && Array.isArray(ud.unidade1.praticas)) ? ud.unidade1.praticas : [], legacyAxisByName),
+    2: normalizeUnitItems((ud.unidade2 && Array.isArray(ud.unidade2.praticas)) ? ud.unidade2.praticas : [], legacyAxisByName),
+    3: normalizeUnitItems((ud.unidade3 && Array.isArray(ud.unidade3.praticas)) ? ud.unidade3.praticas : [], legacyAxisByName)
   };
   state.currentTalpSessionId = av.talpSessionId || null;
   updateNav();
   renderTalp();
   updateRespostasUI();
   renderTalpAnalysis();
+  renderAxisFilterOptions();
   [1,2,3].forEach(function(u){ renderPrac(u); });
   renderMatrix();
   renderSessionPanel();
@@ -1673,8 +1945,8 @@ function goTo(s) {
     renderSessionPanel();
     if(state.supabase.client && state.currentTalpSessionId) refreshTalpResponses();
   }
-  if (s===4) renderMatrix();
-  if (s===5) renderReport();
+  if (s===3) renderMatrix();
+  if (s===4) renderReport();
   window.scrollTo(0,0);
 }
 function nextStep(from) { state.done.add(from); goTo(from+1); }
@@ -1685,7 +1957,7 @@ function updateNav() {
     el.classList.toggle("done", state.done.has(s) && s!==state.step);
   });
   var h = "";
-  for (var i=1; i<=5; i++) {
+  for (var i=1; i<=4; i++) {
     var c = "hs" + (i===state.step?" active":state.done.has(i)?" done":"");
     h += '<div class="'+c+'" onclick="goTo('+i+')"></div>';
   }
@@ -1697,13 +1969,13 @@ function renderReport() {
   document.getElementById("rMeta").innerHTML = meta.map(function(m){ return '<div class="rmi"><div class="lbl">'+m[0]+'</div><div class="val">'+safeText(m[1])+'</div></div>'; }).join("");
   document.getElementById("rCtx").innerHTML = "<h3>1. Contextualizacao Escolar</h3><div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;'><div><strong style='font-size:13px;'>Espacos fisicos:</strong><p style='font-size:13px;color:var(--text3);margin-top:4px;'>"+safeText(gv("espacos")||"-")+"</p></div><div><strong style='font-size:13px;'>Materiais:</strong><p style='font-size:13px;color:var(--text3);margin-top:4px;'>"+safeText(gv("materiais")||"-")+"</p></div></div><strong style='font-size:13px;'>Contexto comunitario:</strong><p style='font-size:13px;color:var(--text3);margin-top:4px;'>"+safeText(gv("contexto")||"-")+"</p>";
   var talpWords = state.talp.map(function(t){ return t.w; }).concat(state.respostas.reduce(function(a,r){ return a.concat(r.talp || []); },[])).join(", ") || "-";
-  document.getElementById("rDiag").innerHTML = "<h3>2. Diagnostico TALP</h3><p style='font-size:13px;margin-bottom:10px;'><strong>Evocacoes ("+state.respostas.length+" estudantes):</strong> "+safeText(talpWords)+"</p><div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;'><div><strong style='font-size:13px;'>Praticas vivenciadas:</strong><p style='font-size:13px;color:var(--text3);'>"+safeText(gv("praticasVividas")||"-")+"</p></div><div><strong style='font-size:13px;'>Praticas desejadas:</strong><p style='font-size:13px;color:var(--text3);'>"+safeText(gv("praticasDesejadas")||"-")+"</p></div></div>";
+  document.getElementById("rDiag").innerHTML = "<h3>2. TALP e Organizacao das Unidades</h3><p style='font-size:13px;margin-bottom:10px;'><strong>Evocacoes ("+state.respostas.length+" estudantes):</strong> "+safeText(talpWords)+"</p><div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;'><div><strong style='font-size:13px;'>Praticas vivenciadas:</strong><p style='font-size:13px;color:var(--text3);'>"+safeText(gv("praticasVividas")||"-")+"</p></div><div><strong style='font-size:13px;'>Praticas desejadas:</strong><p style='font-size:13px;color:var(--text3);'>"+safeText(gv("praticasDesejadas")||"-")+"</p></div></div>";
   var units = [1,2,3].map(function(u){
     var tits=["","Unidade I - Consolidar","Unidade II - Aprofundar","Unidade III - Ampliar"];
-    var pl = state.prac[u].length ? state.prac[u].map(function(p){ return p.n+" ["+EIXOS[p.e].s+"]"; }).join(" - ") : "-";
-    return '<div class="ru u'+u+'"><h4>'+tits[u]+"</h4><p style='font-size:13px;'><strong>Praticas:</strong> "+safeText(pl)+"</p><p style='font-size:13px;margin-top:6px;'><strong>Competencias:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"comp")||"-")+"</span></p><p style='font-size:13px;margin-top:4px;'><strong>Avaliacao:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"aval")||"-")+"</span></p></div>";
+    var pl = state.prac[u].length ? state.prac[u].map(function(p){ return p.n+" ["+((getAxisMetaById(p.axisId)||getAxisMetaByIndex(p.e)||{}).short_name || EIXOS[p.e].s)+"]"; }).join(" - ") : "-";
+    return '<div class="ru u'+u+'"><h4>'+tits[u]+"</h4><p style='font-size:13px;'><strong>Habilidades:</strong> "+safeText(pl)+"</p><p style='font-size:13px;margin-top:6px;'><strong>Competencias:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"comp")||"-")+"</span></p><p style='font-size:13px;margin-top:4px;'><strong>Avaliacao:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"aval")||"-")+"</span></p></div>";
   }).join("");
-  document.getElementById("rUnit").innerHTML = "<h3>3. Unidades Didaticas</h3>"+units;
+  document.getElementById("rUnit").innerHTML = "<h3>3. Consolidar, Aprofundar e Ampliar</h3>"+units;
   var all=getAllPrac(),total=all.length,counts=[0,0,0,0,0,0];
   all.forEach(function(p){ counts[p.e]++; });
   var cov=counts.filter(function(c){ return c>0; }).length;
@@ -1738,8 +2010,7 @@ document.addEventListener("input", function(e){
 });
 document.addEventListener("keydown", function(e){
   if (e.key==="Escape") {
-    var gate = document.getElementById("authGate");
-    if(gate && !state.supabase.session) gate.classList.add("open");
+    if(!state.supabase.session) showAuthScreen();
   }
 });
 
@@ -1748,10 +2019,14 @@ document.addEventListener("keydown", function(e){
   state.supabase.hasLocalSnapshot = !!saved;
   if(saved){
     if(saved.state){
-      state.step = saved.state.step || 1;
+      state.step = normalizeWizardStep(saved.state.step || 1);
       state.talp = Array.isArray(saved.state.talp)? saved.state.talp : [];
       state.respostas = Array.isArray(saved.state.respostas)? saved.state.respostas : [];
-      state.prac = saved.state.prac || {1:[],2:[],3:[]};
+      state.prac = {
+        1: normalizeUnitItems(saved.state.prac && saved.state.prac[1] ? saved.state.prac[1] : []),
+        2: normalizeUnitItems(saved.state.prac && saved.state.prac[2] ? saved.state.prac[2] : []),
+        3: normalizeUnitItems(saved.state.prac && saved.state.prac[3] ? saved.state.prac[3] : [])
+      };
       state.currentEvalId = isUuid(saved.state.currentEvalId) ? saved.state.currentEvalId : null;
       state.currentTalpSessionId = saved.state.currentTalpSessionId || null;
       state.done = new Set(saved.state.done || []);
@@ -1762,6 +2037,7 @@ document.addEventListener("keydown", function(e){
   renderTalp();
   updateRespostasUI();
   renderTalpAnalysis();
+  renderAxisFilterOptions();
   renderMatrix();
   [1,2,3].forEach(function(u){ renderPrac(u); });
   renderSessionPanel();
