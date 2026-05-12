@@ -9,13 +9,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --navy:#0d2137;--navy2:#1a3a5c;--navy3:#2d5a8e;
-  --teal:#1b7a6e;--teal2:#25a393;
-  --gold:#d4a043;--gold2:#f0c060;
-  --cream:#f8f5ef;--cream2:#ede8df;
-  --white:#fff;--text:#1a1a2e;--text2:#3d4a5c;--text3:#6b7a8d;
-  --border:#d0dae8;--green:#2d7d46;--yellow:#b87d1a;--red:#c0392b;
-  --s1:0 1px 4px rgba(13,33,55,.08);--s2:0 4px 16px rgba(13,33,55,.12);--s3:0 8px 32px rgba(13,33,55,.16);
+  --navy:#0057a8;--navy2:#00458a;--navy3:#2f7fca;
+  --teal:#c62828;--teal2:#e53935;
+  --gold:#ffffff;--gold2:#f8fbff;
+  --cream:#f4f8fc;--cream2:#e6eef7;
+  --white:#fff;--text:#162233;--text2:#31465f;--text3:#647a94;
+  --border:#c7d7ea;--green:#2d7d46;--yellow:#b87d1a;--red:#c62828;
+  --s1:0 1px 4px rgba(0,69,138,.08);--s2:0 4px 16px rgba(0,69,138,.14);--s3:0 8px 32px rgba(0,69,138,.18);
   --r:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -276,7 +276,7 @@ body.auth-mode .auth-screen{display:flex}
   <div class="auth-shell">
     <div class="auth-brand">
       <div>
-        <div class="auth-brand-badge">ProfEF-BA · v0.1.01</div>
+        <div class="auth-brand-badge">ProfEF-BA · v0.1.02</div>
         <h1>Entrar no painel do professor</h1>
         <p>Use sua conta do Supabase para acessar as avaliacoes, abrir sessoes TALP e continuar o planejamento no mesmo fluxo do prototipo.</p>
       </div>
@@ -311,7 +311,7 @@ body.auth-mode .auth-screen{display:flex}
       </div>
     </div>
     <div class="auth-mini">
-      <span class="app-ver" id="appVersion">v0.1.01</span>
+      <span class="app-ver" id="appVersion">v0.1.02</span>
       <span class="auth-chip warn" id="authSummary">Professor nao autenticado</span>
       <button class="btn bsm hdr-btn" onclick="openHome()">Home</button>
       <button class="btn bsm hdr-btn" id="draftSaveBtn" onclick="salvarRascunhoPlanejamento()" style="display:none;">Salvar rascunho</button>
