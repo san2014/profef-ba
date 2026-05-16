@@ -79,6 +79,25 @@ create table if not exists public.axis_skills (
   unique (axis_id, sort_order)
 );
 
+create table if not exists public.competencies (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  label text not null,
+  description text not null,
+  sort_order integer not null unique,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.competency_skills (
+  id uuid primary key default gen_random_uuid(),
+  competency_id uuid not null references public.competencies (id) on delete cascade,
+  code text not null,
+  description text not null,
+  sort_order integer not null,
+  created_at timestamptz not null default timezone('utc', now()),
+  unique (competency_id, sort_order)
+);
+
 create index if not exists idx_schools_created_by on public.schools (created_by);
 create index if not exists idx_teachers_auth_user_id on public.teachers (auth_user_id);
 create index if not exists idx_classes_teacher_id on public.classes (teacher_id);
@@ -89,6 +108,8 @@ create index if not exists idx_talp_responses_session_id on public.talp_response
 create index if not exists idx_teacher_evaluations_teacher_id on public.teacher_evaluations (teacher_id);
 create index if not exists idx_axis_skills_axis_id on public.axis_skills (axis_id);
 create index if not exists idx_thematic_axes_sort_order on public.thematic_axes (sort_order);
+create index if not exists idx_competencies_sort_order on public.competencies (sort_order);
+create index if not exists idx_competency_skills_competency_id on public.competency_skills (competency_id);
 
 insert into public.thematic_axes (slug, name, sort_order)
 values
@@ -146,6 +167,75 @@ join (
 on conflict (axis_id, sort_order) do update
 set description = excluded.description;
 
+insert into public.competencies (code, label, description, sort_order)
+values
+  (
+    'Competência 1',
+    'Valorizar conhecimentos historicamente construídos',
+    'Valorizar e utilizar os conhecimentos historicamente construídos sobre o mundo físico, social, cultural e digital para entender e explicar a realidade, continuar aprendendo e colaborar para a construção de uma sociedade justa, democrática e inclusiva.',
+    1
+  ),
+  (
+    'Competência 2',
+    'Exercitar a curiosidade intelectual',
+    'Exercitar a curiosidade intelectual e recorrer à abordagem própria das ciências, incluindo a investigação, a reflexão, a análise crítica, a imaginação e a criatividade, para investigar causas, elaborar e testar hipóteses, formular e resolver problemas e criar soluções (inclusive tecnológicas) com base nos conhecimentos das diferentes áreas.',
+    2
+  ),
+  (
+    'Competência 5',
+    'Compreender e criar tecnologias digitais',
+    'Compreender, utilizar e criar tecnologias digitais de informação e comunicação de forma crítica, significativa, reflexiva e ética nas diversas práticas sociais (incluindo as escolares) para se comunicar, acessar e disseminar informações, produzir conhecimentos, resolver problemas e exercer protagonismo e autoria na vida pessoal e coletiva.',
+    3
+  ),
+  (
+    'Competência 7',
+    'Argumentar com base em fatos, dados e informações confiáveis',
+    'Argumentar com base em fatos, dados e informações confiáveis, para formular, negociar e defender ideias, pontos de vista e decisões comuns que respeitem e promovam os direitos humanos, a consciência socioambiental e o consumo responsável em âmbito local, regional e global, com posicionamento ético em relação ao cuidado de si mesmo, dos outros e do planeta.',
+    4
+  )
+on conflict (code) do update
+set
+  label = excluded.label,
+  description = excluded.description,
+  sort_order = excluded.sort_order;
+
+insert into public.competency_skills (competency_id, code, description, sort_order)
+select c.id, skill.code, skill.description, skill.sort_order
+from public.competencies c
+join (
+  values
+    ('Competência 1', 'EM13LGG101', 'Compreender e analisar processos de produção e circulação de discursos, nas diferentes linguagens, para fazer escolhas fundamentadas em função de interesses pessoais e coletivos.', 1),
+    ('Competência 1', 'EM13LGG102', 'Analisar visões de mundo, conflitos de interesse, preconceitos e ideologias presentes nos discursos veiculados nas diferentes mídias como forma de ampliar suas possibilidades de explicação e interpretação crítica da realidade.', 2),
+    ('Competência 1', 'EM12EF01BA', 'Ampliar experimentações, interpretações e apropriações das manifestações da cultura corporal estabelecendo relações com a sociedade atual, a vida cotidiana, os equipamentos/espaços de lazer e o universo de possibilidades das práticas corporais existentes na realidade local.', 3),
+    ('Competência 1', 'EM12EF02BA', 'Propiciar e consolidar oportunidades de uso e de reflexão acerca da leitura da gestualidade na comunidade local, reconhecendo as possibilidades e significados das práticas corporais conectadas às compreensões das circunstâncias sociais e ao posicionamento inclusivo e colaborativo.', 4),
+    ('Competência 1', 'EM12EFBA03', 'Ampliar e aprofundar compreensões de conceitos e processos contemporâneos da virtualização e das representações das práticas corporais reconhecendo sua diversidade de possibilidade, experimentação, apropriação e reflexão.', 5),
+    ('Competência 1', 'EM12EFBA04', 'Proporcionar oportunidades de vivências que contribuam para a consolidação e a ampliação de compreensões acerca das construções subjetivas da gestualidade desconstruindo preconceitos e aprofundando os processos de autoconhecimento e de reelaboração crítica das práticas corporais na construção de uma sociedade menos desigual.', 6),
+    ('Competência 2', 'EM13LGG201', 'Utilizar as diversas linguagens (artísticas, corporais e verbais) em diferentes contextos, valorizando-as como fenômeno social, cultural, histórico, variável, heterogêneo e sensível aos contextos de uso.', 1),
+    ('Competência 2', 'EM13LGG202', 'Analisar interesses, relações de poder e perspectivas de mundo nos discursos das diversas práticas de linguagem (artísticas, corporais e verbais), para compreender o modo como circulam, constituem-se e (re)produzem significação e ideologias.', 2),
+    ('Competência 2', 'EM13LGG204', 'Dialogar e produzir entendimento mútuo, nas diversas linguagens (artísticas, corporais e verbais), com vistas ao interesse comum pautado em princípios e valores de equidade assentados na democracia e nos direitos humanos.', 3),
+    ('Competência 2', 'EM12EF01BA', 'Ampliar experimentações, interpretações e apropriações das manifestações da cultura corporal estabelecendo relações com a sociedade atual, a vida cotidiana, os equipamentos/espaços de lazer e o universo de possibilidades das práticas corporais existentes na realidade local.', 4),
+    ('Competência 2', 'EM12EF02BA', 'Propiciar e consolidar oportunidades de uso e de reflexão acerca da leitura da gestualidade na comunidade local, reconhecendo as possibilidades e significados das práticas corporais conectadas às compreensões das circunstâncias sociais e ao posicionamento inclusivo e colaborativo.', 5),
+    ('Competência 2', 'EM12EFBA03', 'Ampliar e aprofundar compreensões de conceitos e processos contemporâneos da virtualização e das representações das práticas corporais reconhecendo sua diversidade de possibilidade, experimentação, apropriação e reflexão.', 6),
+    ('Competência 2', 'EM12EFBA04', 'Proporcionar oportunidades de vivências que contribuam para a consolidação e a ampliação de compreensões acerca das construções subjetivas da gestualidade desconstruindo preconceitos e aprofundando os processos de autoconhecimento e de reelaboração crítica das práticas corporais na construção de uma sociedade menos desigual.', 7),
+    ('Competência 5', 'EM13LGG502', 'Analisar criticamente preconceitos, estereótipos e relações de poder presentes nas práticas corporais, adotando posicionamento contrário a qualquer manifestação de injustiça e desrespeito a direitos humanos e valores democráticos.', 1),
+    ('Competência 5', 'EM13LGG503', 'Vivenciar práticas corporais e significá-las em seu projeto de vida como forma de autoconhecimento, autocuidado com o corpo e com a saúde, socialização e entretenimento.', 2),
+    ('Competência 5', 'EM12EF01BA', 'Ampliar experimentações, interpretações e apropriações das manifestações da cultura corporal estabelecendo relações com a sociedade atual, a vida cotidiana, os equipamentos/espaços de lazer e o universo de possibilidades das práticas corporais existentes na realidade local.', 3),
+    ('Competência 5', 'EM12EF02BA', 'Propiciar e consolidar oportunidades de uso e de reflexão acerca da leitura da gestualidade na comunidade local, reconhecendo as possibilidades e significados das práticas corporais conectadas às compreensões das circunstâncias sociais e ao posicionamento inclusivo e colaborativo.', 4),
+    ('Competência 5', 'EM12EFBA03', 'Ampliar e aprofundar compreensões de conceitos e processos contemporâneos da virtualização e das representações das práticas corporais reconhecendo sua diversidade de possibilidade, experimentação, apropriação e reflexão.', 5),
+    ('Competência 5', 'EM12EFBA04', 'Proporcionar oportunidades de vivências que contribuam para a consolidação e a ampliação de compreensões acerca das construções subjetivas da gestualidade desconstruindo preconceitos e aprofundando os processos de autoconhecimento e de reelaboração crítica das práticas corporais na construção de uma sociedade menos desigual.', 6),
+    ('Competência 7', 'EM13LGG701', 'Explorar tecnologias digitais da informação e comunicação (TDIC), compreendendo seus princípios e funcionalidades, e mobilizá-las de modo ético, responsável e adequado a práticas de linguagem em diferentes contextos.', 1),
+    ('Competência 7', 'EM13LGG704', 'Apropriar-se criticamente de processos de pesquisa e busca de informação, por meio de ferramentas e dos novos formatos de produção e distribuição do conhecimento na cultura de rede.', 2),
+    ('Competência 7', 'EM12EF01BA', 'Ampliar experimentações, interpretações e apropriações das manifestações da cultura corporal estabelecendo relações com a sociedade atual, a vida cotidiana, os equipamentos/espaços de lazer e o universo de possibilidades das práticas corporais existentes na realidade local.', 3),
+    ('Competência 7', 'EM12EF02BA', 'Propiciar e consolidar oportunidades de uso e de reflexão acerca da leitura da gestualidade na comunidade local, reconhecendo as possibilidades e significados das práticas corporais conectadas às compreensões das circunstâncias sociais e ao posicionamento inclusivo e colaborativo.', 4),
+    ('Competência 7', 'EM12EFBA03', 'Ampliar e aprofundar compreensões de conceitos e processos contemporâneos da virtualização e das representações das práticas corporais reconhecendo sua diversidade de possibilidade, experimentação, apropriação e reflexão.', 5),
+    ('Competência 7', 'EM12EFBA04', 'Proporcionar oportunidades de vivências que contribuam para a consolidação e a ampliação de compreensões acerca das construções subjetivas da gestualidade desconstruindo preconceitos e aprofundando os processos de autoconhecimento e de reelaboração crítica das práticas corporais na construção de uma sociedade menos desigual.', 6)
+) as skill(competency_code, code, description, sort_order)
+  on skill.competency_code = c.code
+on conflict (competency_id, sort_order) do update
+set
+  code = excluded.code,
+  description = excluded.description;
+
 create or replace function public.get_my_teacher_id()
 returns uuid
 language sql
@@ -190,6 +280,42 @@ as $$
   left join public.axis_skills sk on sk.axis_id = ta.id
   group by ta.id, ta.slug, ta.name, ta.sort_order
   order by ta.sort_order;
+$$;
+
+create or replace function public.list_competencies_with_skills()
+returns table (
+  competency_id uuid,
+  code text,
+  label text,
+  description text,
+  skills jsonb
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    c.id as competency_id,
+    c.code,
+    c.label,
+    c.description,
+    coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'id', sk.id,
+          'code', sk.code,
+          'description', sk.description,
+          'sort_order', sk.sort_order
+        )
+        order by sk.sort_order
+      ) filter (where sk.id is not null),
+      '[]'::jsonb
+    ) as skills
+  from public.competencies c
+  left join public.competency_skills sk on sk.competency_id = c.id
+  group by c.id, c.code, c.label, c.description, c.sort_order
+  order by c.sort_order;
 $$;
 
 create or replace function public.get_public_talp_session(p_token text)
@@ -273,6 +399,7 @@ $$;
 grant execute on function public.get_public_talp_session(text) to anon, authenticated;
 grant execute on function public.submit_talp_response(text, text[], text, text, text) to anon, authenticated;
 grant execute on function public.list_thematic_axes_with_skills() to authenticated;
+grant execute on function public.list_competencies_with_skills() to authenticated;
 
 alter table public.schools enable row level security;
 alter table public.teachers enable row level security;
@@ -282,6 +409,8 @@ alter table public.talp_responses enable row level security;
 alter table public.teacher_evaluations enable row level security;
 alter table public.thematic_axes enable row level security;
 alter table public.axis_skills enable row level security;
+alter table public.competencies enable row level security;
+alter table public.competency_skills enable row level security;
 
 drop policy if exists "teachers_select_own" on public.teachers;
 create policy "teachers_select_own"
@@ -525,6 +654,20 @@ using (true);
 drop policy if exists "axis_skills_select_authenticated" on public.axis_skills;
 create policy "axis_skills_select_authenticated"
 on public.axis_skills
+for select
+to authenticated
+using (true);
+
+drop policy if exists "competencies_select_authenticated" on public.competencies;
+create policy "competencies_select_authenticated"
+on public.competencies
+for select
+to authenticated
+using (true);
+
+drop policy if exists "competency_skills_select_authenticated" on public.competency_skills;
+create policy "competency_skills_select_authenticated"
+on public.competency_skills
 for select
 to authenticated
 using (true);
