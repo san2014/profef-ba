@@ -22,11 +22,12 @@
 html{scroll-behavior:smooth}
 body{font-family:"IBM Plex Sans",sans-serif;background:var(--cream);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
 .hdr{background:var(--navy);color:#fff;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:var(--s2)}
-.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-ic{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-tx{font-family:"Source Serif 4",serif;font-size:20px;font-weight:700}
-.logo-sb{font-size:11px;font-weight:300;opacity:.65;letter-spacing:.08em;text-transform:uppercase}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;min-height:72px;gap:12px;padding:8px 0}
+.logo{display:flex;align-items:center;gap:12px;min-width:0}
+.logo-mark{width:84px;height:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.18));flex-shrink:0}
+.logo-copy{min-width:0}
+.logo-tx{font-family:"Source Serif 4",serif;font-size:21px;font-weight:700;line-height:1.05}
+.logo-sb{font-size:11px;font-weight:500;opacity:.78;letter-spacing:.08em;text-transform:uppercase}
 .hsteps{display:flex;gap:4px}
 .hs{width:28px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);transition:background .3s;cursor:pointer}
 .hs.done{background:var(--teal2)}
@@ -258,6 +259,14 @@ body.home-mode .home{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
 body.auth-mode .hdr,body.auth-mode .snav,body.auth-mode .home,body.auth-mode .main{display:none}
 body.auth-mode .auth-screen{display:flex}
+@media(max-width:720px){
+  .hdr{padding:0 16px}
+  .hdr-in{align-items:flex-start;flex-direction:column;padding:10px 0}
+  .logo{width:100%}
+  .logo-mark{width:72px}
+  .logo-tx{font-size:18px}
+  .auth-mini{width:100%;justify-content:flex-start}
+}
 @media(max-width:860px){.auth-shell{grid-template-columns:1fr}.auth-brand,.auth-panel{padding:28px 24px}.auth-brand h1{font-size:32px}}
 @media print{
   .home{display:none!important}
@@ -304,8 +313,8 @@ body.auth-mode .auth-screen{display:flex}
 <header class="hdr">
   <div class="hdr-in">
     <div class="logo">
-      <div class="logo-ic">&#127939;</div>
-      <div>
+      <img src="./assets/profef-ba-logo.png" alt="Logo oficial ProfEF 2026" class="logo-mark">
+      <div class="logo-copy">
         <div class="logo-tx">ProfEF-BA</div>
         <div class="logo-sb">Planejamento em Educacao Fisica</div>
       </div>
@@ -402,7 +411,7 @@ body.auth-mode .auth-screen{display:flex}
   <div class="ph">
     <div class="badge">Etapa 2 de 4</div>
     <h1 class="ptitle">TALP e Organizacao das Unidades</h1>
-    <p class="pdesc">Crie a sessao TALP, acompanhe as respostas e, na mesma tela, escolha as habilidades para Consolidar, Aprofundar e Ampliar.</p>
+    <p class="pdesc">Crie a sessao TALP, acompanhe as respostas e, na mesma tela, escolha os objetos de conhecimento e as competencias para Consolidar, Aprofundar e Ampliar.</p>
   </div>
 
   <div class="qp">
@@ -482,69 +491,108 @@ body.auth-mode .auth-screen{display:flex}
 
   <div class="fs">
     <div class="fst">&#127919; Consolidar, Aprofundar e Ampliar</div>
-    <div class="info"><span style="font-size:16px;">&#128161;</span><div>Com base nas palavras do TALP, escolha habilidades ja cadastradas para cada eixo tematico. O professor filtra por eixo, busca por palavra-chave e marca rapidamente o que vai trabalhar em cada unidade.</div></div>
+    <div class="info"><span style="font-size:16px;">&#128161;</span><div>Com base nas palavras do TALP, escolha objetos de conhecimento por eixo tematico e competencias com suas respectivas habilidades. O professor pode filtrar, buscar por palavra-chave e marcar rapidamente o que vai trabalhar em cada unidade.</div></div>
     <div class="ug">
       <div class="uc">
-        <div class="uh c1"><div class="ui">&#127807;</div><div><div class="ut">Consolidar</div><div class="us">Unidade I · Habilidades mais proximas do repertorio atual</div></div></div>
+        <div class="uh c1"><div class="ui">&#127807;</div><div><div class="ut">Consolidar</div><div class="us">Unidade I · Objetos de conhecimento e competencias mais proximos do repertorio atual</div></div></div>
         <div class="ub">
           <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Objetos de conhecimento por eixo tematico</div>
             <div class="skill-toolbar">
               <select id="u1axisFilter" onchange="updateUnitFilter(1)">
                 <option value="">Todos os eixos</option>
               </select>
-              <input type="text" id="u1skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(1)">
+              <input type="text" id="u1skillSearch" placeholder="Buscar objeto de conhecimento..." oninput="updateUnitFilter(1)">
             </div>
-            <div class="skill-list" id="u1skillsList"><div class="es">Carregando habilidades...</div></div>
-            <div class="skill-hint">Selecionadas para Consolidar</div>
-            <div class="skill-summary" id="u1list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+            <div class="skill-list" id="u1skillsList"><div class="es">Carregando objetos de conhecimento...</div></div>
+            <div class="skill-hint">Objetos de conhecimento selecionados para Consolidar</div>
+            <div class="skill-summary" id="u1list"><div class="skill-empty">Nenhum objeto de conhecimento selecionado</div></div>
+          </div>
+          <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Competencias e habilidades</div>
+            <div class="skill-toolbar">
+              <select id="u1competencyFilter" onchange="updateCompetencyFilter(1)">
+                <option value="">Todas as competencias</option>
+              </select>
+              <input type="text" id="u1competencySearch" placeholder="Buscar habilidade da competencia..." oninput="updateCompetencyFilter(1)">
+            </div>
+            <div class="skill-list" id="u1competenciesList"><div class="es">Carregando competencias...</div></div>
+            <div class="skill-hint">Competencias selecionadas para Consolidar</div>
+            <div class="skill-summary" id="u1competencySummary"><div class="skill-empty">Nenhuma competencia selecionada</div></div>
           </div>
           <div class="um">
-            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Problematização / tematização</label>
-            <textarea id="u1comp" placeholder="Observacoes do professor sobre como consolidar essas habilidades..."></textarea>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Problematizacao / tematizacao</label>
+            <textarea id="u1comp" placeholder="Observacoes do professor sobre como consolidar os objetos de conhecimento e as competencias..."></textarea>
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
             <textarea id="u1aval" placeholder="Ex.: portfolio, roda de conversa..."></textarea>
           </div>
         </div>
       </div>
       <div class="uc">
-        <div class="uh c2"><div class="ui">&#128300;</div><div><div class="ut">Aprofundar</div><div class="us">Unidade II · Habilidades para analise e ampliacao critica</div></div></div>
+        <div class="uh c2"><div class="ui">&#128300;</div><div><div class="ut">Aprofundar</div><div class="us">Unidade II · Objetos de conhecimento e competencias para analise e ampliacao critica</div></div></div>
         <div class="ub">
           <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Objetos de conhecimento por eixo tematico</div>
             <div class="skill-toolbar">
               <select id="u2axisFilter" onchange="updateUnitFilter(2)">
                 <option value="">Todos os eixos</option>
               </select>
-              <input type="text" id="u2skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(2)">
+              <input type="text" id="u2skillSearch" placeholder="Buscar objeto de conhecimento..." oninput="updateUnitFilter(2)">
             </div>
-            <div class="skill-list" id="u2skillsList"><div class="es">Carregando habilidades...</div></div>
-            <div class="skill-hint">Selecionadas para Aprofundar</div>
-            <div class="skill-summary" id="u2list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+            <div class="skill-list" id="u2skillsList"><div class="es">Carregando objetos de conhecimento...</div></div>
+            <div class="skill-hint">Objetos de conhecimento selecionados para Aprofundar</div>
+            <div class="skill-summary" id="u2list"><div class="skill-empty">Nenhum objeto de conhecimento selecionado</div></div>
+          </div>
+          <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Competencias e habilidades</div>
+            <div class="skill-toolbar">
+              <select id="u2competencyFilter" onchange="updateCompetencyFilter(2)">
+                <option value="">Todas as competencias</option>
+              </select>
+              <input type="text" id="u2competencySearch" placeholder="Buscar habilidade da competencia..." oninput="updateCompetencyFilter(2)">
+            </div>
+            <div class="skill-list" id="u2competenciesList"><div class="es">Carregando competencias...</div></div>
+            <div class="skill-hint">Competencias selecionadas para Aprofundar</div>
+            <div class="skill-summary" id="u2competencySummary"><div class="skill-empty">Nenhuma competencia selecionada</div></div>
           </div>
           <div class="um">
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / encaminhamentos</label>
-            <textarea id="u2comp" placeholder="Observacoes do professor sobre como aprofundar essas habilidades..."></textarea>
+            <textarea id="u2comp" placeholder="Observacoes do professor sobre como aprofundar os objetos de conhecimento e as competencias..."></textarea>
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
             <textarea id="u2aval" placeholder="Ex.: seminario, projeto..."></textarea>
           </div>
         </div>
       </div>
       <div class="uc">
-        <div class="uh c3"><div class="ui">&#127757;</div><div><div class="ut">Ampliar</div><div class="us">Unidade III · Habilidades para diversificar o curriculo</div></div></div>
+        <div class="uh c3"><div class="ui">&#127757;</div><div><div class="ut">Ampliar</div><div class="us">Unidade III · Objetos de conhecimento e competencias para diversificar o curriculo</div></div></div>
         <div class="ub">
           <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Objetos de conhecimento por eixo tematico</div>
             <div class="skill-toolbar">
               <select id="u3axisFilter" onchange="updateUnitFilter(3)">
                 <option value="">Todos os eixos</option>
               </select>
-              <input type="text" id="u3skillSearch" placeholder="Buscar habilidade..." oninput="updateUnitFilter(3)">
+              <input type="text" id="u3skillSearch" placeholder="Buscar objeto de conhecimento..." oninput="updateUnitFilter(3)">
             </div>
-            <div class="skill-list" id="u3skillsList"><div class="es">Carregando habilidades...</div></div>
-            <div class="skill-hint">Selecionadas para Ampliar</div>
-            <div class="skill-summary" id="u3list"><div class="skill-empty">Nenhuma habilidade selecionada</div></div>
+            <div class="skill-list" id="u3skillsList"><div class="es">Carregando objetos de conhecimento...</div></div>
+            <div class="skill-hint">Objetos de conhecimento selecionados para Ampliar</div>
+            <div class="skill-summary" id="u3list"><div class="skill-empty">Nenhum objeto de conhecimento selecionado</div></div>
+          </div>
+          <div class="skill-panel">
+            <div class="skill-hint" style="margin-bottom:8px;">Competencias e habilidades</div>
+            <div class="skill-toolbar">
+              <select id="u3competencyFilter" onchange="updateCompetencyFilter(3)">
+                <option value="">Todas as competencias</option>
+              </select>
+              <input type="text" id="u3competencySearch" placeholder="Buscar habilidade da competencia..." oninput="updateCompetencyFilter(3)">
+            </div>
+            <div class="skill-list" id="u3competenciesList"><div class="es">Carregando competencias...</div></div>
+            <div class="skill-hint">Competencias selecionadas para Ampliar</div>
+            <div class="skill-summary" id="u3competencySummary"><div class="skill-empty">Nenhuma competencia selecionada</div></div>
           </div>
           <div class="um">
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Competencias / encaminhamentos</label>
-            <textarea id="u3comp" placeholder="Observacoes do professor sobre como ampliar essas habilidades..."></textarea>
+            <textarea id="u3comp" placeholder="Observacoes do professor sobre como ampliar os objetos de conhecimento e as competencias..."></textarea>
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:5px;">Avaliacao Formativa</label>
             <textarea id="u3aval" placeholder="Ex.: festival, mostra cultural..."></textarea>
           </div>
@@ -562,11 +610,11 @@ body.auth-mode .auth-screen{display:flex}
   <div class="ph">
     <div class="badge">Etapa 3 de 4</div>
     <h1 class="ptitle">Matriz de Justica Curricular</h1>
-    <p class="pdesc">Analise automatica da distribuicao das habilidades selecionadas nos eixos do DCRB (2022).</p>
+    <p class="pdesc">Analise automatica da distribuicao dos objetos de conhecimento selecionados nos eixos do DCRB (2022).</p>
   </div>
   <div class="ind-panel">
     <h3 style="font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:14px;">&#128202; Indicador de Equilibrio Curricular</h3>
-    <div id="indBadge" class="ibadge yellow"><div class="ibig">&#128993;</div><div><div class="ibt">Adicione habilidades para calcular</div><div class="ibs">Volte a Etapa 2 e selecione habilidades para Consolidar, Aprofundar e Ampliar</div></div></div>
+    <div id="indBadge" class="ibadge yellow"><div class="ibig">&#128993;</div><div><div class="ibt">Adicione objetos de conhecimento para calcular</div><div class="ibs">Volte a Etapa 2 e selecione os objetos de conhecimento para Consolidar, Aprofundar e Ampliar</div></div></div>
     <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;">Checklist de Diversidade Curricular</h4>
     <div class="cklist" id="checklist"></div>
   </div>
@@ -619,10 +667,16 @@ var state = {
   talp: [],
   respostas: [],
   prac: {1:[], 2:[], 3:[]},
+  competencies: {1:[], 2:[], 3:[]},
   unitFilters: {
     1: { axisId: "", query: "" },
     2: { axisId: "", query: "" },
     3: { axisId: "", query: "" }
+  },
+  competencyFilters: {
+    1: { competencyId: "", query: "" },
+    2: { competencyId: "", query: "" },
+    3: { competencyId: "", query: "" }
   },
   currentEvalId: null,
   currentTalpSessionId: null,
@@ -633,6 +687,7 @@ var state = {
     activeSession: null,
     evaluations: [],
     thematicAxes: [],
+    competencyCatalog: [],
     poller: null,
     saveTimer: null,
     saveInFlight: false,
@@ -711,6 +766,7 @@ function saveAll(){
         talp: state.talp,
         respostas: state.respostas,
         prac: state.prac,
+        competencies: state.competencies,
         currentEvalId: state.currentEvalId,
         currentTalpSessionId: state.currentTalpSessionId,
         done: Array.from(state.done || [])
@@ -801,6 +857,9 @@ function getAxisMetaById(axisId){
 function getAxisMetaByIndex(index){
   return (state.supabase.thematicAxes || [])[index] || null;
 }
+function getCompetencyMetaById(competencyId){
+  return (state.supabase.competencyCatalog || []).find(function(item){ return item.competency_id === competencyId; }) || null;
+}
 function normalizeUnitItems(items, axisByName){
   axisByName = axisByName || {};
   return (items || []).map(function(item){
@@ -815,6 +874,19 @@ function normalizeUnitItems(items, axisByName){
       axisSlug: axis ? axis.axis_slug : "",
       axisName: axis ? axis.axis_name : ((EIXOS[legacyIndex] && EIXOS[legacyIndex].n) || ""),
       sortOrder: item.sortOrder || 0
+    };
+  });
+}
+function normalizeUnitCompetencies(items){
+  return (items || []).map(function(item){
+    if(item && item.id && item.competencyId) return item;
+    var competency = getCompetencyMetaById(item.competencyId) || null;
+    return {
+      id: item.id || ("competency-" + normalizeSearchText(item.n || "").slice(0, 40)),
+      n: item.n || item.description || "",
+      competencyId: competency ? competency.competency_id : (item.competencyId || ""),
+      competencyCode: competency ? competency.code : (item.competencyCode || ""),
+      competencyLabel: competency ? competency.label : (item.competencyLabel || "")
     };
   });
 }
@@ -943,6 +1015,7 @@ async function handleAuthSession(session){
     try{
       await ensureTeacherProfile();
       await loadThematicAxes();
+      await loadCompetencyCatalog();
       await loadTeacherEvaluations(true);
       await loadActiveTalpSession();
     }catch(err){
@@ -953,7 +1026,11 @@ async function handleAuthSession(session){
     state.currentTalpSessionId = null;
     state.supabase.activeSession = null;
     state.supabase.thematicAxes = [];
+    state.supabase.competencyCatalog = [];
     stopTalpPolling();
+    renderAxisFilterOptions();
+    renderCompetencyFilterOptions();
+    [1,2,3].forEach(function(u){ renderPrac(u); renderCompetencies(u); });
     renderSessionPanel();
   }
   setAuthLoading(false);
@@ -1377,6 +1454,23 @@ async function loadThematicAxes(){
   [1,2,3].forEach(function(unit){ renderPrac(unit); });
   return state.supabase.thematicAxes;
 }
+async function loadCompetencyCatalog(){
+  if(!state.supabase.client || !state.supabase.teacher) return [];
+  var resp = await state.supabase.client.rpc("list_competencies_with_skills");
+  if(resp.error) throw resp.error;
+  state.supabase.competencyCatalog = (resp.data || []).map(function(item){
+    return {
+      competency_id: item.competency_id,
+      code: item.code,
+      label: item.label,
+      description: item.description,
+      skills: Array.isArray(item.skills) ? item.skills : []
+    };
+  });
+  renderCompetencyFilterOptions();
+  [1,2,3].forEach(function(unit){ renderCompetencies(unit); });
+  return state.supabase.competencyCatalog;
+}
 function renderAxisFilterOptions(){
   [1,2,3].forEach(function(unit){
     var select = document.getElementById("u" + unit + "axisFilter");
@@ -1384,6 +1478,17 @@ function renderAxisFilterOptions(){
     var current = state.unitFilters[unit].axisId || "";
     select.innerHTML = '<option value="">Todos os eixos</option>' + (state.supabase.thematicAxes || []).map(function(axis){
       return '<option value="' + safeText(axis.axis_id) + '">' + safeText(axis.axis_name) + '</option>';
+    }).join("");
+    select.value = current;
+  });
+}
+function renderCompetencyFilterOptions(){
+  [1,2,3].forEach(function(unit){
+    var select = document.getElementById("u" + unit + "competencyFilter");
+    if(!select) return;
+    var current = state.competencyFilters[unit].competencyId || "";
+    select.innerHTML = '<option value="">Todas as competencias</option>' + (state.supabase.competencyCatalog || []).map(function(item){
+      return '<option value="' + safeText(item.competency_id) + '">' + safeText(item.code + " - " + item.label) + '</option>';
     }).join("");
     select.value = current;
   });
@@ -1396,6 +1501,15 @@ function updateUnitFilter(unit){
     query: search ? search.value : ""
   };
   renderPrac(unit);
+}
+function updateCompetencyFilter(unit){
+  var select = document.getElementById("u" + unit + "competencyFilter");
+  var search = document.getElementById("u" + unit + "competencySearch");
+  state.competencyFilters[unit] = {
+    competencyId: select ? select.value : "",
+    query: search ? search.value : ""
+  };
+  renderCompetencies(unit);
 }
 function getFilteredSkills(unit){
   var filter = state.unitFilters[unit] || { axisId: "", query: "" };
@@ -1411,6 +1525,25 @@ function getFilteredSkills(unit){
         if(!query) return true;
         return normalizeSearchText(skill.description).indexOf(query) >= 0 ||
           normalizeSearchText(axis.axis_name).indexOf(query) >= 0;
+      })
+    };
+  }).filter(function(group){ return group.skills.length > 0; });
+}
+function getFilteredCompetencySkills(unit){
+  var filter = state.competencyFilters[unit] || { competencyId: "", query: "" };
+  var selectedIds = new Set((state.competencies[unit] || []).map(function(item){ return item.id; }));
+  var query = normalizeSearchText(filter.query);
+  return (state.supabase.competencyCatalog || []).filter(function(item){
+    return !filter.competencyId || item.competency_id === filter.competencyId;
+  }).map(function(item){
+    return {
+      competency: item,
+      skills: (item.skills || []).filter(function(skill){
+        if(selectedIds.has(skill.id)) return false;
+        if(!query) return true;
+        return normalizeSearchText(skill.description).indexOf(query) >= 0 ||
+          normalizeSearchText(item.code).indexOf(query) >= 0 ||
+          normalizeSearchText(item.label).indexOf(query) >= 0;
       })
     };
   }).filter(function(group){ return group.skills.length > 0; });
@@ -1439,32 +1572,84 @@ function toggleSkillForUnit(unit, axisId, skillId, shouldAdd){
   state.prac[unit] = current;
   renderPrac(unit);
 }
+function toggleCompetencyForUnit(unit, competencyId, skillId, shouldAdd){
+  var competency = getCompetencyMetaById(competencyId);
+  if(!competency) return;
+  var skill = (competency.skills || []).find(function(item){ return item.id === skillId; });
+  if(!skill) return;
+  var current = state.competencies[unit] || [];
+  var existingIdx = current.findIndex(function(item){ return item.id === skillId; });
+  if(shouldAdd && existingIdx < 0){
+    current.push({
+      id: skill.id,
+      n: skill.description,
+      competencyId: competency.competency_id,
+      competencyCode: competency.code,
+      competencyLabel: competency.label
+    });
+  }
+  if(!shouldAdd && existingIdx >= 0){
+    current.splice(existingIdx, 1);
+  }
+  state.competencies[unit] = current;
+  renderCompetencies(unit);
+}
 function removeP(u,i) {
   state.prac[u].splice(i,1);
   renderPrac(u);
+}
+function removeCompetencyItem(unit, index){
+  state.competencies[unit].splice(index, 1);
+  renderCompetencies(unit);
 }
 function renderPrac(u) {
   var c = document.getElementById("u" + u + "list"), list = state.prac[u] || [];
   var available = document.getElementById("u" + u + "skillsList");
   if(available){
     if(!state.supabase.thematicAxes.length){
-      available.innerHTML = '<div class="es">Entre no painel para carregar eixos e habilidades.</div>';
+      available.innerHTML = '<div class="es">Entre no painel para carregar eixos e objetos de conhecimento.</div>';
     }else{
       var groups = getFilteredSkills(u);
       available.innerHTML = groups.length ? groups.map(function(group){
         return '<div style="margin-bottom:10px;"><div class="skill-hint" style="margin-bottom:6px;"><strong>' + safeText(group.axis.axis_name) + '</strong></div>' + group.skills.map(function(skill){
           return '<label class="skill-option"><input type="checkbox" onchange="toggleSkillForUnit(' + u + ',\'' + group.axis.axis_id + '\',\'' + skill.id + '\', this.checked)"><span>' + safeText(skill.description) + '</span></label>';
         }).join("") + '</div>';
-      }).join("") : '<div class="es">Nenhuma habilidade encontrada para esse filtro.</div>';
+      }).join("") : '<div class="es">Nenhum objeto de conhecimento encontrado para esse filtro.</div>';
     }
   }
   if (!list.length) {
-    c.innerHTML = '<div class="skill-empty">Nenhuma habilidade selecionada</div>';
+    c.innerHTML = '<div class="skill-empty">Nenhum objeto de conhecimento selecionado</div>';
     return;
   }
   c.innerHTML = list.map(function(p,i) {
     var axisMeta = getAxisMetaById(p.axisId) || getAxisMetaByIndex(p.e) || {};
     return '<span class="skill-chip">' + safeText(p.n) + '<span class="etag t' + (typeof p.e === "number" ? p.e : 0) + '">' + safeText(axisMeta.short_name || axisMeta.axis_name || EIXOS[p.e || 0].s) + '</span><button onclick="removeP(' + u + ',' + i + ')">x</button></span>';
+  }).join("");
+}
+function renderCompetencies(unit){
+  var c = document.getElementById("u" + unit + "competencySummary"), list = state.competencies[unit] || [];
+  var available = document.getElementById("u" + unit + "competenciesList");
+  if(available){
+    if(!state.supabase.competencyCatalog.length){
+      available.innerHTML = '<div class="es">Entre no painel para carregar competencias e habilidades.</div>';
+    }else{
+      var groups = getFilteredCompetencySkills(unit);
+      available.innerHTML = groups.length ? groups.map(function(group){
+        return '<div style="margin-bottom:10px;"><div class="skill-hint" style="margin-bottom:6px;"><strong>' + safeText(group.competency.code + " - " + group.competency.label) + '</strong></div>' + group.skills.map(function(skill){
+          return '<label class="skill-option"><input type="checkbox" onchange="toggleCompetencyForUnit(' + unit + ',\'' + group.competency.competency_id + '\',\'' + skill.id + '\', this.checked)"><span>' + safeText(skill.description) + '</span></label>';
+        }).join("") + '</div>';
+      }).join("") : '<div class="es">Nenhuma habilidade de competencia encontrada para esse filtro.</div>';
+    }
+  }
+  if(!c) return;
+  if(!list.length){
+    c.innerHTML = '<div class="skill-empty">Nenhuma competencia selecionada</div>';
+    return;
+  }
+  c.innerHTML = list.map(function(item, index){
+    var meta = getCompetencyMetaById(item.competencyId) || item;
+    var badge = meta.code || item.competencyCode || "Competencia";
+    return '<span class="skill-chip">' + safeText(item.n) + '<span class="etag t4">' + safeText(badge) + '</span><button onclick="removeCompetencyItem(' + unit + ',' + index + ')">x</button></span>';
   }).join("");
 }
 function getAllPrac() {
@@ -1479,7 +1664,7 @@ function renderMatrix() {
   var cov = counts.filter(function(c){ return c>0; }).length;
   var b = document.getElementById("indBadge");
   var lvl, icon, title, sub;
-  if (!total) { lvl="yellow";icon="&#128993;";title="Nenhuma habilidade selecionada";sub="Selecione habilidades nas unidades da Etapa 2."; }
+  if (!total) { lvl="yellow";icon="&#128993;";title="Nenhum objeto de conhecimento selecionado";sub="Selecione objetos de conhecimento nas unidades da Etapa 2."; }
   else if (cov>=3) { lvl="green";icon="&#128994;";title="Equilibrio Ampliado";sub=cov+" eixos contemplados. Planejamento diversificado!"; }
   else if (cov===2) { lvl="yellow";icon="&#128993;";title="Equilibrio Parcial";sub=cov+" eixos. Considere ampliar a diversidade."; }
   else { lvl="red";icon="&#128308;";title="Concentracao Excessiva";sub="Apenas "+cov+" eixo(s). Risco de reducao curricular."; }
@@ -1492,7 +1677,7 @@ function renderMatrix() {
   document.getElementById("matrixGrid").innerHTML = EIXOS.map(function(e){
     var cnt=counts[e.id], pct=total?Math.round(cnt/total*100):0;
     var tags = all.filter(function(p){ return p.e===e.id; }).map(function(p){ return '<span class="ept">' + safeText(p.n) + "</span>"; }).join("");
-    return '<div class="ec"><div class="eh e' + e.id + '"><span style="font-size:20px;">' + e.ic + '</span><span class="en">' + e.n + '</span></div><div class="ebody"><div class="ebar"><div class="ebarfill b' + e.id + '" style="width:' + pct + '%"></div></div><div class="estats"><span>' + cnt + ' habilidade(s)</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;">' + pct + '%</span></div><div style="margin-top:10px;">' + (tags || '<span style="font-size:11px;color:var(--text3);">Nenhuma habilidade</span>') + "</div></div></div>";
+    return '<div class="ec"><div class="eh e' + e.id + '"><span style="font-size:20px;">' + e.ic + '</span><span class="en">' + e.n + '</span></div><div class="ebody"><div class="ebar"><div class="ebarfill b' + e.id + '" style="width:' + pct + '%"></div></div><div class="estats"><span>' + cnt + ' objeto(s)</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;">' + pct + '%</span></div><div style="margin-top:10px;">' + (tags || '<span style="font-size:11px;color:var(--text3);">Nenhum objeto de conhecimento</span>') + "</div></div></div>";
   }).join("");
   if (total) {
     document.getElementById("donutSec").style.display="block";
@@ -1514,7 +1699,7 @@ function renderDonut(counts, total) {
     paths+="<path d='M "+xi1+" "+yi1+" L "+x1+" "+y1+" A "+r+" "+r+" 0 "+lg+" 1 "+x2+" "+y2+" L "+xi2+" "+yi2+" A "+ri+" "+ri+" 0 "+lg+" 0 "+xi1+" "+yi1+" Z' fill='"+colors[i]+"' opacity='.9'/>";
     start+=a;
   });
-  document.getElementById("donutSvg").innerHTML = paths + "<text x='"+cx+"' y='"+(cy-6)+"' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='#1a1a2e'>"+total+"</text>" + "<text x='"+cx+"' y='"+(cy+12)+"' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b7a8d'>habilidades</text>";
+  document.getElementById("donutSvg").innerHTML = paths + "<text x='"+cx+"' y='"+(cy-6)+"' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='#1a1a2e'>"+total+"</text>" + "<text x='"+cx+"' y='"+(cy+12)+"' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b7a8d'>objetos</text>";
   document.getElementById("donutLeg").innerHTML = EIXOS.map(function(e,i){
     return '<div class="dli"><div class="dld" style="background:'+colors[i]+'"></div><span style="font-size:12px;">'+e.s+'</span><span class="dlp">'+Math.round(counts[i]/total*100)+"%</span></div>";
   }).join("");
@@ -1547,15 +1732,17 @@ function buildAvaliacaoPayload(existingId){
       talpSessionId: state.currentTalpSessionId
     },
     unidadesDidaticas: {
-      unidade1: { praticas: state.prac[1], competencias: gv("u1comp"), avaliacao: gv("u1aval") },
-      unidade2: { praticas: state.prac[2], competencias: gv("u2comp"), avaliacao: gv("u2aval") },
-      unidade3: { praticas: state.prac[3], competencias: gv("u3comp"), avaliacao: gv("u3aval") }
+      unidade1: { praticas: state.prac[1], competenciasSelecionadas: state.competencies[1], competencias: gv("u1comp"), avaliacao: gv("u1aval") },
+      unidade2: { praticas: state.prac[2], competenciasSelecionadas: state.competencies[2], competencias: gv("u2comp"), avaliacao: gv("u2aval") },
+      unidade3: { praticas: state.prac[3], competenciasSelecionadas: state.competencies[3], competencias: gv("u3comp"), avaliacao: gv("u3aval") }
     },
     matrizCurricular: {
       indicador: indicador,
       eixosCobertos: cobertura,
       totalEixos: 6,
       totalPraticas: total,
+      totalObjetosConhecimento: total,
+      totalCompetenciasSelecionadas: (state.competencies[1] || []).length + (state.competencies[2] || []).length + (state.competencies[3] || []).length,
       totalHabilidades: total,
       distribuicaoPorEixo: EIXOS.map(function(e,i){ return { eixo: e.n, quantidade: counts[i], percentual: Math.round((counts[i]/(total||1))*100) }; })
     }
@@ -1572,6 +1759,7 @@ function buildEvaluationSnapshot(status){
       talp: state.talp,
       respostas: state.respostas,
       prac: state.prac,
+      competencies: state.competencies,
       currentTalpSessionId: state.currentTalpSessionId
     },
     fields: collectFields(),
@@ -1616,6 +1804,11 @@ function applyEvaluationRecord(record){
       2: normalizeUnitItems(ui.prac && ui.prac[2] ? ui.prac[2] : []),
       3: normalizeUnitItems(ui.prac && ui.prac[3] ? ui.prac[3] : [])
     };
+    state.competencies = {
+      1: normalizeUnitCompetencies(ui.competencies && ui.competencies[1] ? ui.competencies[1] : []),
+      2: normalizeUnitCompetencies(ui.competencies && ui.competencies[2] ? ui.competencies[2] : []),
+      3: normalizeUnitCompetencies(ui.competencies && ui.competencies[3] ? ui.competencies[3] : [])
+    };
     state.currentTalpSessionId = ui.currentTalpSessionId || null;
     state.currentEvalId = record.id || null;
   }else{
@@ -1628,7 +1821,8 @@ function applyEvaluationRecord(record){
   updateRespostasUI();
   renderTalpAnalysis();
   renderAxisFilterOptions();
-  [1,2,3].forEach(function(u){ renderPrac(u); });
+  renderCompetencyFilterOptions();
+  [1,2,3].forEach(function(u){ renderPrac(u); renderCompetencies(u); });
   renderMatrix();
   renderSessionPanel();
   saveAll();
@@ -1790,7 +1984,7 @@ function renderHome(){
     var turmaLabel = (idt.serie||"-") + " | Turma " + (idt.turma||"-");
     var recordId = ev.id || content.id || "";
     var recordDate = ev.updated_at || content.generatedAt;
-    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(recordDate)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Habilidades selecionadas:</strong> '+(mat.totalHabilidades || mat.totalPraticas || 0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+recordId+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+recordId+'\','+idx+')">Excluir</button></div></article>';
+    return '<article class="eval-card"><div class="eval-top"><div class="eval-title">'+turmaLabel+'</div><div class="eval-date">'+formatDateTime(recordDate)+'</div></div><div style="margin-bottom:8px;"><span class="eval-badge '+indicadorClass(mat.indicador)+'">'+(mat.indicador||"Sem indicador")+'</span></div><div class="eval-meta"><strong>Escola:</strong> '+safeText(idt.escola||"-")+'<br><strong>Professor(a):</strong> '+safeText(idt.professor||"-")+'<br><strong>Respostas TALP:</strong> '+(((at.respostasTalp||[]).length)||0)+'<br><strong>Objetos de conhecimento:</strong> '+(mat.totalObjetosConhecimento || mat.totalHabilidades || mat.totalPraticas || 0)+'<br><strong>Competencias selecionadas:</strong> '+(mat.totalCompetenciasSelecionadas || 0)+'</div><div class="eval-actions"><button class="btn btn-s bsm" onclick="abrirAvaliacaoEdicao(\''+recordId+'\','+idx+')">Abrir e editar</button><button class="btn bsm" style="background:#c0392b;color:#fff;" onclick="excluirAvaliacao(\''+recordId+'\','+idx+')">Excluir</button></div></article>';
   }).join("");
 }
 function openHome(){
@@ -1804,10 +1998,16 @@ function resetPlanState(){
   state.talp = [];
   state.respostas = [];
   state.prac = {1:[], 2:[], 3:[]};
+  state.competencies = {1:[], 2:[], 3:[]};
   state.unitFilters = {
     1: { axisId: "", query: "" },
     2: { axisId: "", query: "" },
     3: { axisId: "", query: "" }
+  };
+  state.competencyFilters = {
+    1: { competencyId: "", query: "" },
+    2: { competencyId: "", query: "" },
+    3: { competencyId: "", query: "" }
   };
   state.currentEvalId = null;
   state.currentTalpSessionId = null;
@@ -1818,7 +2018,9 @@ function clearFormFields(){
     "espacos","materiais","contexto",
     "praticasVividas","praticasDesejadas","praticasInv","barreiras",
     "u1comp","u1aval","u2comp","u2aval","u3comp","u3aval",
-    "u1skillSearch","u2skillSearch","u3skillSearch","talpInducerTerm"
+    "u1skillSearch","u2skillSearch","u3skillSearch",
+    "u1competencySearch","u2competencySearch","u3competencySearch",
+    "talpInducerTerm"
   ].forEach(function(id){
     var el = document.getElementById(id);
     if(!el) return;
@@ -1837,7 +2039,8 @@ function newPlanejamento(){
   updateRespostasUI();
   renderTalpAnalysis();
   renderAxisFilterOptions();
-  [1,2,3].forEach(function(u){ renderPrac(u); });
+  renderCompetencyFilterOptions();
+  [1,2,3].forEach(function(u){ renderPrac(u); renderCompetencies(u); });
   renderMatrix();
   renderSessionPanel();
   startFlow(1);
@@ -1881,13 +2084,19 @@ function aplicarAvaliacaoNoPlano(ev){
     2: normalizeUnitItems((ud.unidade2 && Array.isArray(ud.unidade2.praticas)) ? ud.unidade2.praticas : [], legacyAxisByName),
     3: normalizeUnitItems((ud.unidade3 && Array.isArray(ud.unidade3.praticas)) ? ud.unidade3.praticas : [], legacyAxisByName)
   };
+  state.competencies = {
+    1: normalizeUnitCompetencies((ud.unidade1 && Array.isArray(ud.unidade1.competenciasSelecionadas)) ? ud.unidade1.competenciasSelecionadas : []),
+    2: normalizeUnitCompetencies((ud.unidade2 && Array.isArray(ud.unidade2.competenciasSelecionadas)) ? ud.unidade2.competenciasSelecionadas : []),
+    3: normalizeUnitCompetencies((ud.unidade3 && Array.isArray(ud.unidade3.competenciasSelecionadas)) ? ud.unidade3.competenciasSelecionadas : [])
+  };
   state.currentTalpSessionId = av.talpSessionId || null;
   updateNav();
   renderTalp();
   updateRespostasUI();
   renderTalpAnalysis();
   renderAxisFilterOptions();
-  [1,2,3].forEach(function(u){ renderPrac(u); });
+  renderCompetencyFilterOptions();
+  [1,2,3].forEach(function(u){ renderPrac(u); renderCompetencies(u); });
   renderMatrix();
   renderSessionPanel();
   saveAll();
@@ -1973,14 +2182,15 @@ function renderReport() {
   var units = [1,2,3].map(function(u){
     var tits=["","Unidade I - Consolidar","Unidade II - Aprofundar","Unidade III - Ampliar"];
     var pl = state.prac[u].length ? state.prac[u].map(function(p){ return p.n+" ["+((getAxisMetaById(p.axisId)||getAxisMetaByIndex(p.e)||{}).short_name || EIXOS[p.e].s)+"]"; }).join(" - ") : "-";
-    return '<div class="ru u'+u+'"><h4>'+tits[u]+"</h4><p style='font-size:13px;'><strong>Habilidades:</strong> "+safeText(pl)+"</p><p style='font-size:13px;margin-top:6px;'><strong>Competencias:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"comp")||"-")+"</span></p><p style='font-size:13px;margin-top:4px;'><strong>Avaliacao:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"aval")||"-")+"</span></p></div>";
+    var compSel = state.competencies[u].length ? state.competencies[u].map(function(item){ return item.n+" ["+(item.competencyCode || "Competencia")+"]"; }).join(" - ") : "-";
+    return '<div class="ru u'+u+'"><h4>'+tits[u]+"</h4><p style='font-size:13px;'><strong>Objetos de conhecimento:</strong> "+safeText(pl)+"</p><p style='font-size:13px;margin-top:6px;'><strong>Competencias selecionadas:</strong> <span style='color:var(--text3);'>"+safeText(compSel)+"</span></p><p style='font-size:13px;margin-top:6px;'><strong>Encaminhamentos:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"comp")||"-")+"</span></p><p style='font-size:13px;margin-top:4px;'><strong>Avaliacao:</strong> <span style='color:var(--text3);'>"+safeText(gv("u"+u+"aval")||"-")+"</span></p></div>";
   }).join("");
   document.getElementById("rUnit").innerHTML = "<h3>3. Consolidar, Aprofundar e Ampliar</h3>"+units;
   var all=getAllPrac(),total=all.length,counts=[0,0,0,0,0,0];
   all.forEach(function(p){ counts[p.e]++; });
   var cov=counts.filter(function(c){ return c>0; }).length;
   var ind=cov>=3?"Equilibrio Ampliado":cov===2?"Equilibrio Parcial":"Concentracao Excessiva";
-  document.getElementById("rMat").innerHTML = "<h3>4. Matriz de Justica Curricular</h3><p style='font-size:13px;margin-bottom:12px;'><strong>Indicador:</strong> "+ind+" ("+cov+"/6 eixos)</p>"+EIXOS.map(function(e,i){ var ok=counts[i]>0; return '<div class="cki '+(ok?"ok":"nok")+'" style="margin-bottom:6px;">'+e.n+' - <span style="font-family:monospace;font-size:12px;">'+counts[i]+' pratica(s) | '+Math.round(counts[i]/(total||1)*100)+"%</span></div>"; }).join("");
+  document.getElementById("rMat").innerHTML = "<h3>4. Matriz de Justica Curricular</h3><p style='font-size:13px;margin-bottom:12px;'><strong>Indicador:</strong> "+ind+" ("+cov+"/6 eixos)</p>"+EIXOS.map(function(e,i){ var ok=counts[i]>0; return '<div class="cki '+(ok?"ok":"nok")+'" style="margin-bottom:6px;">'+e.n+' - <span style="font-family:monospace;font-size:12px;">'+counts[i]+' objeto(s) | '+Math.round(counts[i]/(total||1)*100)+"%</span></div>"; }).join("");
   var missing=EIXOS.filter(function(e,i){ return !counts[i]; });
   var recs="<ul style='padding-left:20px;font-size:13px;color:var(--text2);line-height:1.8;'>";
   if (missing.length) recs+="<li>Eixos nao contemplados: <strong>"+safeText(missing.map(function(e){ return e.n; }).join(", "))+"</strong>. Considere incluir no proximo ano.</li>";
@@ -2027,6 +2237,11 @@ document.addEventListener("keydown", function(e){
         2: normalizeUnitItems(saved.state.prac && saved.state.prac[2] ? saved.state.prac[2] : []),
         3: normalizeUnitItems(saved.state.prac && saved.state.prac[3] ? saved.state.prac[3] : [])
       };
+      state.competencies = {
+        1: normalizeUnitCompetencies(saved.state.competencies && saved.state.competencies[1] ? saved.state.competencies[1] : []),
+        2: normalizeUnitCompetencies(saved.state.competencies && saved.state.competencies[2] ? saved.state.competencies[2] : []),
+        3: normalizeUnitCompetencies(saved.state.competencies && saved.state.competencies[3] ? saved.state.competencies[3] : [])
+      };
       state.currentEvalId = isUuid(saved.state.currentEvalId) ? saved.state.currentEvalId : null;
       state.currentTalpSessionId = saved.state.currentTalpSessionId || null;
       state.done = new Set(saved.state.done || []);
@@ -2038,8 +2253,9 @@ document.addEventListener("keydown", function(e){
   updateRespostasUI();
   renderTalpAnalysis();
   renderAxisFilterOptions();
+  renderCompetencyFilterOptions();
   renderMatrix();
-  [1,2,3].forEach(function(u){ renderPrac(u); });
+  [1,2,3].forEach(function(u){ renderPrac(u); renderCompetencies(u); });
   renderSessionPanel();
   openHome();
   initializeAuth();
